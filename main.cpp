@@ -244,8 +244,9 @@ class Vector3{
 
 class Camera_class{
    
+	private:
    public:
-       Point3 eye, look,up;
+      Point3 eye, look,up;
 	   Vector3 u,v,n;
 	   double viewAngle,aspect,nearDist,farDist;
 
@@ -301,10 +302,7 @@ void Camera_class::setModelviewMatrix(void)
 
 		m[1]=v.x; m[5]=v.y;  m[9]=v.z; m[13]=-eVec.dot(v);
 
-		m[2]=0;//n.x;
-		m[6]=0;//n.y;
-		m[10]=0;//n.z;
-		m[14]=-eVec.dot(n);
+		m[2]=n.x; m[6]=n.y;  m[10]=n.z; m[14]=-eVec.dot(n);
 
 		m[3]=0;  m[7]=0;  m[11]=0; m[15]=1;
 
