@@ -244,8 +244,6 @@ class Vector3{
 
 class Camera_class{
    
-		  private:
-	int prevX=WIDTH/2,prevY = HEIGHT/2;
    public:
        Point3 eye, look,up;
 	   Vector3 u,v,n;
@@ -258,7 +256,7 @@ class Camera_class{
 		Camera_class();
 	   void set(Point3 eye,Point3 look,Vector3 up);
 
-	   void slide(float delU,float delV,float delN);
+	   void slide(double delU,double delV,double delN);
 
 	   void roll(float angle);
       
@@ -275,11 +273,11 @@ Camera_class::Camera_class()
 void mouseHandler(int x,int y){cam.cameraMove(x,y);}
 void Camera_class::cameraMove(int x,int y){
  
-	double dx = x - prevX;
+	double dx = x - WIDTH/2.0;
 	
 
 	yaw(dx*DELTA);
-	double dy = y  - prevY;
+	double dy = y  - HEIGHT/2.0;
 	double pitch = dy*DELTA;
 	if (pitch>M_PI/2){
         pitch = M_PI/2 - 0.0001f;
@@ -288,8 +286,8 @@ void Camera_class::cameraMove(int x,int y){
         pitch =-1*M_PI/2 + 0.0001f;
     }
 	this->pitch(pitch);
-	prevY = y;
-	prevX = x;
+
+	if(dx&&dy)glutWarpPointer(WIDTH/2,HEIGHT/2);
 	return;
 
 }
@@ -303,7 +301,10 @@ void Camera_class::setModelviewMatrix(void)
 
 		m[1]=v.x; m[5]=v.y;  m[9]=v.z; m[13]=-eVec.dot(v);
 
-		m[2]=n.x; m[6]=n.y;  m[10]=n.z; m[14]=-eVec.dot(n);
+		m[2]=0;//n.x;
+		m[6]=0;//n.y;
+		m[10]=0;//n.z;
+		m[14]=-eVec.dot(n);
 
 		m[3]=0;  m[7]=0;  m[11]=0; m[15]=1;
 
@@ -327,7 +328,7 @@ void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 }
 
 
-void Camera_class::slide(float delU,float delV,float delN)
+void Camera_class::slide(double delU,double delV,double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
@@ -3286,70 +3287,18 @@ void keyboardListener(unsigned char key, int x,int y){
 }
 
 void specialKeyListener(int key, int x,int y){
-	switch(key){
-                
-		case GLUT_KEY_DOWN:
-			 eye.y+=5;
-             cam.set(eye,look,up);
-             break;
-			 
-		case GLUT_KEY_UP:
-             eye.y-=5;
-             cam.set(eye,look,up);
-             break;
-             
-		case GLUT_KEY_RIGHT:
-             e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=2;
-             break;
-			
-		case GLUT_KEY_LEFT:
-             e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=3;
-			 break;
-
-		case GLUT_KEY_PAGE_UP:
-		     e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=4;
-			 break;
-			 
-		case GLUT_KEY_PAGE_DOWN:
-			 e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=5;
-			 break;
-
-		case GLUT_KEY_INSERT:
-			 break;
-
-		case GLUT_KEY_HOME:
-			 break;
-		case GLUT_KEY_END:
-			 break;
-
-		default:
-			 break;
-	}
 }
 
 void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of the screen (2D)
 	switch(button){
 		case GLUT_LEFT_BUTTON:
-			if(state == GLUT_DOWN){		// 2 times?? in ONE click? -- solution is checking DOWN or UP
-				cam.roll(5);	
-		}
+			if(state == GLUT_DOWN){
+					  ;
+			}
 			break;
 
 		case GLUT_RIGHT_BUTTON:
-			if(state == GLUT_DOWN){		// 2 times?? in ONE click? -- solution is checking DOWN or UP
-				cam.pitch(5);	
+			if(state == GLUT_DOWN){		
 			}
 			break;
 
@@ -3363,7 +3312,9 @@ void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of th
 }
 
 void init(){
-	
+
+	glutSetCursor(GLUT_CURSOR_NONE);	
+	glutWarpPointer(WIDTH/2,HEIGHT/2);
 	cameraAngle = 0;	//// init the cameraAngle
 	//cameraAngleDelta = 0.006;
 	//rectAngle = 0;
@@ -3453,7 +3404,8 @@ int main(int argc, char **argv){
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);	//Depth, Double buffer, RGB color
-  	
+
+
 	glutCreateWindow("Game");
 
     init();
