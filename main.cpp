@@ -8,7 +8,6 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <iostream>
-using namespace std;
 #define HEIGHT 900
 #define WIDTH 1388
 #define GROUND 1, 1, 1
@@ -21,13 +20,10 @@ using namespace std;
 #define SKY_DOWN 5
 #define ANGLE 0.2
 #define SCALE 0.9
-#define DELTA 1.0/2.0
+#define DELTA 1.0/2.5
 #define RAND 0.01
 GLuint base_tex,tower_f;
 
-typedef uint32_t DWORD;
-typedef uint16_t WORD;
-typedef uint8_t BYTE;
 
 //make a global variable -- for tracking the anglular position of camera
 double cameraAngle;			//in radian
@@ -51,7 +47,7 @@ float i_i;
 float zoom = 350;
 float rightAngle=0.0, leftAngle=0.0;
 
-bool increasing,decreasing,show_strctr,shp_rot,lft_mov,frt_mov;
+bool show_strctr,shp_rot,lft_mov,frt_mov;
 
 //////////////////////////////////////////////
 //LOL WTH
@@ -63,31 +59,31 @@ int skybox[6];
 int num_texture=-1;
 
 typedef struct tagBITMAPFILEHEADER {
-  WORD  bfType;
-  DWORD bfSize;
-  WORD  bfReserved1;
-  WORD  bfReserved2;
-  DWORD bfOffBits;
+  uint16_t  bfType;
+  uint32_t bfSize;
+  uint16_t  bfReserved1;
+  uint16_t  bfReserved2;
+  uint32_t bfOffBits;
 } BITMAPFILEHEADER, *PBITMAPFILEHEADER;
 
 typedef struct tagRGBTRIPLE {
-  BYTE rgbtBlue;
-  BYTE rgbtGreen;
-  BYTE rgbtRed;
+  uint8_t rgbtBlue;
+  uint8_t rgbtGreen;
+  uint8_t rgbtRed;
 } RGBTRIPLE;
 
 typedef struct tagBITMAPINFOHEADER {
-  DWORD biSize;
+  uint32_t biSize;
   unsigned int  biWidth;
   unsigned int  biHeight;
-  WORD  biPlanes;
-  WORD  biBitCount;
-  DWORD biCompression;
-  DWORD biSizeImage;
+  uint16_t  biPlanes;
+  uint16_t  biBitCount;
+  uint32_t biCompression;
+  uint32_t biSizeImage;
   unsigned int  biXPelsPerMeter;
   unsigned int  biYPelsPerMeter;
-  DWORD biClrUsed;
-  DWORD biClrImportant;
+  uint32_t biClrUsed;
+  uint32_t biClrImportant;
 } BITMAPINFOHEADER, *PBITMAM_PINFOHEADER;
 
 int LoadBitmap(char *filename, int width, int height)
@@ -95,8 +91,7 @@ int LoadBitmap(char *filename, int width, int height)
     int i,j=0;
     FILE *l_file;
     unsigned char *l_texture;
-    BITMAPFILEHEADER fileheader; // not used
-    BITMAPINFOHEADER infoheader; // not used
+    BITMAPINFOHEADER infoheader; 
     RGBTRIPLE rgb;
 
     num_texture++;
@@ -268,9 +263,9 @@ class Camera_class{
 	   void roll(float angle);
       
 
-	   void pitch(float angle);
+	   void pitch(double angle);
 
-	   void yaw(float angle);
+	   void yaw(double angle);
 
 }cam;
 Camera_class::Camera_class()
@@ -280,14 +275,12 @@ Camera_class::Camera_class()
 void mouseHandler(int x,int y){cam.cameraMove(x,y);}
 void Camera_class::cameraMove(int x,int y){
  
-	float dx = x - prevX;
+	double dx = x - prevX;
 	
-	std::cout<<dx<<'\n';
 
 	yaw(dx*DELTA);
-	float dy = y  - prevY;
-	float pitch = dy*DELTA;
-	std::cout<<"dy:"<<dy<<'\n';
+	double dy = y  - prevY;
+	double pitch = dy*DELTA;
 	if (pitch>M_PI/2){
         pitch = M_PI/2 - 0.0001f;
     }
@@ -364,12 +357,12 @@ void Camera_class::roll(float angle)
 }
 
 
-void Camera_class::pitch(float angle)
+void Camera_class::pitch(double angle)
 {
 
 
-	float cs = cos( M_PI/180 * angle ) ;
-    float sn = sin( M_PI/180 * angle ) ;
+	 double cs = cos( M_PI/180 * angle ) ;
+    double  sn = sin( M_PI/180 * angle ) ;
     
     Vector3 t( v ) ;
 
@@ -383,13 +376,13 @@ void Camera_class::pitch(float angle)
 
 
 
-void Camera_class::yaw(float angle)
+void Camera_class::yaw(double angle)
 {
 
 
 
-	float cs = cos( M_PI/180 * angle ) ;
-    float sn = sin( M_PI/180 * angle ) ;
+	 double  cs = cos( M_PI/180 * angle ) ;
+    double  sn = sin( M_PI/180 * angle ) ;
 
     Vector3 t( n ) ;
 
@@ -456,8 +449,72 @@ void initSkybox(void)
 
 float white[]={1,1,1,1};
 double D = 50 * 50;
+void drawCubeTexure(int a,int x, int y, int z,int texID){
+		  glEnable(GL_TEXTURE_2D);
+		  {
+					 glBindTexture(GL_TEXTURE_2D,texID);
+					 glPushMatrix();{
+								glutSolidCube(a);
+					 }glPopMatrix();
 
-void drawtex()
+		  }glDisable(GL_TEXTURE_2D);
+}
+void drawCubeTexur(int a,int x, int y, int z,int texID){
+	
+		  glEnable(GL_TEXTURE_2D);{
+	glPushMatrix();
+	{  glRotatef(90,1,0,0);
+	glTranslatef(x,y,z);
+	glPushMatrix();
+	{	glColor3fv(white);
+	glBindTexture(GL_TEXTURE_2D,texID);
+	glBegin(GL_QUADS);
+                                      
+   glTexCoord2f(0,0); glVertex3f(-a,-a,-a);                                        
+   glTexCoord2f(1,0); glVertex3f(+a,-a,-a);                                        
+   glTexCoord2f(1,1); glVertex3f(+a,+a,-a);                                        
+   glTexCoord2f(0,1); glVertex3f(-a,+a,-a);  	
+
+             glBegin(GL_QUADS);
+                 glTexCoord2f(0,0); glVertex3f(+a,-a,-a);
+                 glTexCoord2f(1,0); glVertex3f(+a,-a,+a);
+                 glTexCoord2f(1,1); glVertex3f(+a,+a,+a);
+                 glTexCoord2f(0,1); glVertex3f(+a,+a,-a);
+             glEnd();
+  
+             glBegin(GL_QUADS);
+                 glTexCoord2f(0,0); glVertex3f(+a,-a,+a);
+                 glTexCoord2f(1,0); glVertex3f(-a,-a,+a);
+                 glTexCoord2f(1,1); glVertex3f(-a,+a,+a);
+                 glTexCoord2f(0,1); glVertex3f(+a,+a,+a);
+             glEnd();
+             
+             glBegin(GL_QUADS);
+                 glTexCoord2f(0,0); glVertex3f(-a,-a,+a);
+                 glTexCoord2f(1,0); glVertex3f(-a,-a,-a);
+                 glTexCoord2f(1,1); glVertex3f(-a,+a,-a);
+                 glTexCoord2f(0,1); glVertex3f(-a,+a,+a);
+             glEnd();
+
+             /* Top and Bottom */
+             glBegin(GL_QUADS);
+                 glTexCoord2f(0,0); glVertex3f(-a,+a,-a);
+                 glTexCoord2f(1,0); glVertex3f(+a,+a,-a);
+                 glTexCoord2f(1,1); glVertex3f(+a,+a,+a);
+                 glTexCoord2f(0,1); glVertex3f(-a,+a,+a);
+             glEnd();
+             
+             glBegin(GL_QUADS);
+                 glTexCoord2f(1,1); glVertex3f(+a,-a,-a);
+                 glTexCoord2f(0,1); glVertex3f(-a,-a,-a);
+                 glTexCoord2f(0,0); glVertex3f(-a,-a,+a);
+                 glTexCoord2f(1,0); glVertex3f(+a,-a,+a);
+             glEnd();
+}}
+         glPopMatrix();
+			}glDisable(GL_TEXTURE_2D);
+}
+void draw()
 {
      
      glEnable(GL_TEXTURE_2D);{
@@ -3202,17 +3259,7 @@ void animate(){
 }
 
 void keyboardListener(unsigned char key, int x,int y){
-	switch(key){
-
-		case '1':	//reverse the rotation of camera
-			brdg_opn=1;
-			break;
-
-		case '2':	//increase rotation of camera by 10%
-			brdg_opn=-1;
-			break;
-
-	
+		  switch(key){
 			
 		case 'w':	//reverse the rotation of camera
 			cam.slide(0,0,-5);
@@ -3222,149 +3269,13 @@ void keyboardListener(unsigned char key, int x,int y){
 			cam.slide(0,0,5);
 			break;
 			
-		case 'u':	//toggle grids
-			cam.slide(0,5,0);
-			break;
-			
-//		case 'd':	//toggle grids
-//			cam.slide(0,-5,0);
-//			break;
-			
 		case 'd':	//toggle grids
-			cam.slide(-5,0,0);
-			break;
-			
-		case 'a':	//toggle grids
 			cam.slide(5,0,0);
 			break;
 			
-		case 'o':	//increase rotation of camera by 10%
-		   cam.roll(2);
+		case 'a':	//toggle grids
+			cam.slide(-5,0,0);
 			break;
-
-		case 'p':	//decrease rotation
-			cam.pitch(2);
-			break;
-
-			
-		case 'y':	//toggle grids
-			cam.yaw(2);
-			break;
-		
-		case 'q':	//increase rotation of camera by 10%
-		   cam.roll(-2);
-			break;
-
-			
-		case 'z':	//toggle grids
-			cam.yaw(-2);
-			break;
-			
-		case 't':	//toggle grids
-			show_strctr=0;
-			break;
-			
-		case 'c':	//toggle grids
-			//printf("%lf %lf\n",car1_spd,car2_spd);
-			//printf("%lf %lf %lf\n",eye.x,eye.y,cameraAngle);
-			printf("%d %d %lf %lf\n",shp_dir,shp_rot,shp_spd,shp_rot_angle);
-			//shp_spd=-400;
-			break;
-
-		case '3':	//ESCAPE KEY -- simply exit
-		d1 -= .03;
-		d2 -= .03;
-		d3 -= .03;
-
-        a1 -=.03;
-		a2 -=.03;
-		a3 -=.03;
-		printf("%lf %lf %lf %lf %lf %lf\n",a1,a2,a3,d1,d2,d3);
-		//	if(d1==0||d2==0||d3==0)
-			//	d1=d2=d3=1;
-			break;
-			
-		case '4':	//toggle grids
-		    d1 += .03;
-			d2 += .03;
-			d3 += .03;
-			a1 +=.03;
-			a2 +=.03;
-			a3 +=.03;
-
-        	printf("%lf %lf %lf %lf %lf %lf\n",a1,a2,a3,d1,d2,d3);
-		//	if(d1==1||d2==1||d3==1)
-		//		d1=d2=d3=0;
-			break;
-			
-		case '5':
-             eye.x=0;eye.y=150;eye.z=200;
-             look.x=0;look.y=0;look.z=100;	
-             cameraAngle=3.1416/2;
-             cam.set(eye,look,up);
-			break;
-
-		case '6':
-             eye.x=180;eye.y=0;eye.z=100;
-             look.x=0;look.y=0;look.z=30;
-             cameraAngle=0;
-             cam.set(eye,look,up);
-             	
-			break;
-			
-		case '7':
-             eye.x=250;eye.y=0;eye.z=45;
-             look.x=0;look.y=0;look.z=40;
-             cameraAngle=0;
-             cam.set(eye,look,up);
-             
-             
-			break;
-
-		case '8':
-             eye.x=120;eye.y=0;eye.z=30;
-             look.x=0;look.y=0;look.z=60;
-             cameraAngle=0;
-             cam.set(eye,look,up);	
-             
-			break;
-			
-		case '9':
-             eye.x=180;eye.y=0;eye.z=10;
-             look.x=0;look.y=0;look.z=40;
-             cameraAngle=0;
-             cam.set(eye,look,up);	
-             		
-			break;
-
-		case '0':	
-             eye.x=0;eye.y=400;eye.z=100;
-             look.x=0;look.y=0;look.z=40;
-             cameraAngle=3.1416/2;
-             cam.set(eye,look,up);
-            
-			break;
-		
-		case 'n':
-             printf("%lf %f %f\n",cameraAngle,eye.x,eye.y);
-             e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=-1;
-             
-             break;
-        
-        case 'm':
-             
-             //cam_rot=1;
-             e_z=eye.z;
-             e_y=eye.y;
-             e_x=eye.x;
-             cam_rot=1;
-             
-             break;
-             
-
 		case 27:	//ESCAPE KEY -- simply exit
 			exit(0);
 			break;
@@ -3529,9 +3440,11 @@ void display(){
 	float lightPosition1[4] = {-500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
-     if(!show_strctr)
-     drawtex();
+     if(!show_strctr){
+	drawCubeTexure(2,500,100,50,12);
+	draw();
 
+}
      glDisable (GL_BLEND);
 }
 
@@ -3540,7 +3453,7 @@ int main(int argc, char **argv){
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);	//Depth, Double buffer, RGB color
-	
+  	
 	glutCreateWindow("Game");
 
     init();
@@ -3563,6 +3476,6 @@ int main(int argc, char **argv){
 	cam.set(eye,look,up);
 
 	glutMainLoop();		//The main loop of OpenGL
-
+	
 	return 0;
 }
