@@ -9,6 +9,8 @@
 #include <GL/glut.h>
 #include <iostream>
 using namespace std;
+#define HEIGHT 900
+#define WIDTH 1388
 #define GROUND 1, 1, 1
 #define BLACK .4, .5, 1
 #define SKY_FRONT 0
@@ -19,6 +21,7 @@ using namespace std;
 #define SKY_DOWN 5
 #define ANGLE 0.2
 #define SCALE 0.9
+#define DELTA 1.0/2.0
 #define RAND 0.01
 GLuint base_tex,tower_f;
 
@@ -246,50 +249,56 @@ class Vector3{
 
 class Camera_class{
    
-
+		  private:
+	int prevX=WIDTH/2,prevY = HEIGHT/2;
    public:
        Point3 eye, look,up;
 	   Vector3 u,v,n;
 	   double viewAngle,aspect,nearDist,farDist;
-	   void setModelviewMatrix();
-	   Camera_class();
+
+		void setModelviewMatrix();
+		
+		void cameraMove(int x, int y);
+	   
+		Camera_class();
 	   void set(Point3 eye,Point3 look,Vector3 up);
 
 	   void slide(float delU,float delV,float delN);
 
 	   void roll(float angle);
       
-		void mv(char direction);
 
 	   void pitch(float angle);
 
 	   void yaw(float angle);
 
-};
-void Camera_class::mv(char direction){
-		  switch(direction){
-					 case 'a':
-								this->eye.x+=0.01;
-								break;
-					 case 'w':
-								this->eye.y+=0.01;
-								break;
-					 case 's':
-								this->eye.y-=0.01;
-								break;
-					 case 'd':
-								this->eye.x-=0.01;
-								break;
-								default: 
-								break;
-		  }
-
-		  setModelviewMatrix();
-		  return;
-}
+}cam;
 Camera_class::Camera_class()
 {
      
+}
+void mouseHandler(int x,int y){cam.cameraMove(x,y);}
+void Camera_class::cameraMove(int x,int y){
+ 
+	float dx = x - prevX;
+	
+	std::cout<<dx<<'\n';
+
+	yaw(dx*DELTA);
+	float dy = y  - prevY;
+	float pitch = dy*DELTA;
+	std::cout<<"dy:"<<dy<<'\n';
+	if (pitch>M_PI/2){
+        pitch = M_PI/2 - 0.0001f;
+    }
+    else if (pitch<-1*M_PI/2) {
+        pitch =-1*M_PI/2 + 0.0001f;
+    }
+	this->pitch(pitch);
+	prevY = y;
+	prevX = x;
+	return;
+
 }
 
 void Camera_class::setModelviewMatrix(void)
@@ -341,8 +350,8 @@ void Camera_class::slide(float delU,float delV,float delN)
 void Camera_class::roll(float angle)
 {
 
-		float cs=cos(3.14159265/180*angle);
-		float sn=sin(3.14159265/180*angle);
+		float cs=cos(M_PI/180*angle);
+		float sn=sin(M_PI/180*angle);
 
 		Vector3 t(u);
 
@@ -359,8 +368,8 @@ void Camera_class::pitch(float angle)
 {
 
 
-	float cs = cos( 3.14159265/180 * angle ) ;
-    float sn = sin( 3.14159265/180 * angle ) ;
+	float cs = cos( M_PI/180 * angle ) ;
+    float sn = sin( M_PI/180 * angle ) ;
     
     Vector3 t( v ) ;
 
@@ -379,8 +388,8 @@ void Camera_class::yaw(float angle)
 
 
 
-	float cs = cos( 3.14159265/180 * angle ) ;
-    float sn = sin( 3.14159265/180 * angle ) ;
+	float cs = cos( M_PI/180 * angle ) ;
+    float sn = sin( M_PI/180 * angle ) ;
 
     Vector3 t( n ) ;
 
@@ -408,7 +417,6 @@ GLfloat d1=.9,d2=.9,d3=.9;
 
 
 
-Camera_class cam;
 
 Point3 eye(0,zoom,200);
 	
@@ -416,7 +424,7 @@ Point3 look(0,0,100);
 
 Vector3 up(0,0,1);
 
-void func(void)
+void loadBMPs(void)
 {
     texid1=LoadBitmap("assets/front.bmp", 256, 128);
     texid2=LoadBitmap("assets/left.bmp", 128, 256);
@@ -3481,7 +3489,7 @@ void init(){
     glEnable(GL_NORMALIZE);
 
 
-    func();
+    loadBMPs();
     initSkybox();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -3529,17 +3537,17 @@ void display(){
 
 int main(int argc, char **argv){
 	glutInit(&argc,argv);
-	glutInitWindowSize(800, 700);
+	glutInitWindowSize(WIDTH, HEIGHT);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);	//Depth, Double buffer, RGB color
-
-	glutCreateWindow("Lalbag Fort");
+	
+	glutCreateWindow("Game");
 
     init();
 
 	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
 
-	glutDisplayFunc(display);	//display callback function
+	glutDisplayFunc(display);	//display callback loadBMPstion
 	glutIdleFunc(animate);		//what you want to do in the idle time (when no drawing is occuring)
 
 	//ADD keyboard listeners:
@@ -3550,6 +3558,8 @@ int main(int argc, char **argv){
 	//ADD mouse listeners:
 	glutMouseFunc(mouseListener);
 	
+	glutPassiveMotionFunc(mouseHandler);
+	glutMotionFunc(mouseHandler);
 	cam.set(eye,look,up);
 
 	glutMainLoop();		//The main loop of OpenGL
