@@ -8,8 +8,10 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <iostream>
-#define HEIGHT 900
-#define WIDTH 1388
+#define HEIGHT 1080
+#define WIDTH 1920
+#define XC  (WIDTH/2)
+#define YC  (HEIGHT/2)
 #define GROUND 1, 1, 1
 #define BLACK .4, .5, 1
 #define SKY_FRONT 0
@@ -448,6 +450,34 @@ void initSkybox(void)
 
 float white[]={1,1,1,1};
 double D = 50 * 50;
+void drawMouse(){
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+glLoadIdentity();
+gluOrtho2D(0.0, 1.0, 1.0, 0.0);
+glMatrixMode(GL_MODELVIEW);
+
+glPushMatrix();
+glLoadIdentity();
+
+
+glBegin(GL_QUADS);
+    glColor3f(0.0f, 0.0f, 0.0f);
+	 float wpx = 5/(float)WIDTH;
+	 float hpx = 5/(float)HEIGHT;
+	 
+    glVertex2f(0.5 - wpx, 0.5-hpx);
+    glVertex2f(0.5 + wpx, 0.5-hpx);
+    glVertex2f(0.5 + wpx, 0.5+hpx);
+    glVertex2f(0.5 - wpx, 0.5+hpx);
+glEnd();
+// Making sure we can render 3d again
+glMatrixMode(GL_PROJECTION);
+glPopMatrix();
+glMatrixMode(GL_MODELVIEW);
+glPopMatrix();
+//cam.setModelviewMatrix();
+}
 void drawCubeTexure(int a,int x, int y, int z,int texID){
 		  glEnable(GL_TEXTURE_2D);
 		  {
@@ -515,7 +545,6 @@ void drawCubeTexur(int a,int x, int y, int z,int texID){
 }
 void draw()
 {
-     
      glEnable(GL_TEXTURE_2D);{
          glPushMatrix();{
          glRotatef(90,1,0,0);
@@ -3198,7 +3227,7 @@ void draw()
 
 
 	//ADD this line in the end --- if you use double buffer (i.e. GL_DOUBLE)
-	glutSwapBuffers();
+
 }
 
 void animate(){
@@ -3286,12 +3315,15 @@ void keyboardListener(unsigned char key, int x,int y){
 
 void specialKeyListener(int key, int x,int y){
 }
-
+void Blink()
+{
+					 cam.slide(0,0,-160) ;
+}
 void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of the screen (2D)
 	switch(button){
 		case GLUT_LEFT_BUTTON:
 			if(state == GLUT_DOWN){
-					  ;
+				Blink();
 			}
 			break;
 
@@ -3314,9 +3346,6 @@ void init(){
 	glutSetCursor(GLUT_CURSOR_NONE);	
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
 	cameraAngle = 0;	//// init the cameraAngle
-	//cameraAngleDelta = 0.006;
-	//rectAngle = 0;
-	//canDrawGrid = true;
 	cameraHeight = 150;
 	cameraRadius = 150;
 	
@@ -3350,7 +3379,8 @@ void init(){
 
 
     loadBMPs();
-    initSkybox();
+    drawCubeTexur(5,199,23,0,12);
+	 initSkybox();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -3364,9 +3394,8 @@ void display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(GROUND, 0);	//color black
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   /////////////////////////////////////////////////////////////////////////////////
-  	GLfloat qaAmbientLight[]	= {a1, a2, a3, 1.0};
+  	
+	GLfloat qaAmbientLight[]	= {a1, a2, a3, 1.0};
 	GLfloat qaDiffuseLight[]	= {d1, d2, d3, 1.0};
 	GLfloat qaSpecularLight[]	= {1.0, 1.0, 1.0, 1.0};
 
@@ -3390,8 +3419,12 @@ void display(){
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
      if(!show_strctr){
-	drawCubeTexure(2,500,100,50,12);
+
+
 	draw();
+	//drawCubeTexure(200,500,100,50,texid1);
+	drawMouse();
+	glutSwapBuffers();
 
 }
      glDisable (GL_BLEND);
@@ -3402,7 +3435,6 @@ int main(int argc, char **argv){
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);	//Depth, Double buffer, RGB color
-
 
 	glutCreateWindow("Game");
 
