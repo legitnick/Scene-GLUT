@@ -2800,44 +2800,58 @@ void draw()
 void idle(){
 	glutPostRedisplay();	
 }
-void keyboardListener(unsigned char key, int x,int y){
-		  switch(key){
-			
-		case 'w':	//reverse the rotation of camera
-			cam.slide(0,0,-5);
-			break;
-			
-		case 's':	//reverse the rotation of camera
-			cam.slide(0,0,5);
-			break;
-			
-		case 'd':	//toggle grids
-			cam.slide(5,0,0);
-			break;
-			
-		case 'a':	//toggle grids
-			cam.slide(-5,0,0);
-			break;
-		case 27:	//ESCAPE KEY -- simply exit
-			exit(0);
-			break;
-
-		default:
-			break;
-	}
-}
 
 void specialKeyListener(int key, int x,int y){
 }
-void Blink()
+void keyboard(unsigned char key,int x,int y)
 {
-					 cam.slide(0,0,-160) ;
+    switch(key)
+    {
+    case 'W':
+    case 'w':
+        camera->motion.Forward = true;
+        break;
+    case 'A':
+    case 'a':
+        camera->motion.Left = true;
+        break;
+    case 'S':
+    case 's':
+        camera->motion.Backward = true;
+        break;
+    case 'D':
+    case 'd':
+        camera->motion.Right = true;
+        break;
+    }
 }
+void keyboard_up(unsigned char key,int x,int y)
+{
+    switch(key)
+    {
+    case 'W':
+    case 'w':
+        camera->motion.Forward = false;
+        break;
+    case 'A':
+    case 'a':
+        camera->motion.Left = false;
+        break;
+    case 'S':
+    case 's':
+        camera->motion.Backward = false;
+        break;
+    case 'D':
+    case 'd':
+        camera->motion.Right = false;
+        break;
+    }
+}
+
 void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of the screen (2D)
 	switch(button){
 		case GLUT_LEFT_BUTTON:
 			if(state == GLUT_DOWN){
-				Blink();
 			}
 			break;
 
@@ -2889,7 +2903,7 @@ void init(){
     glEnable(GL_NORMALIZE);
 
 
-
+	camera=  new Camera(glutGet(GLUT_SCREEN_WIDTH),glutGet(GLUT_SCREEN_HEIGHT));
    tx.loadBMPs();
     drawCubeTexur(5,199,23,0,12);
 	tx.initSkybox();
@@ -2900,6 +2914,15 @@ void init(){
 
 }
 
+void reshape(int w,int h)
+{
+    glViewport(0,0,w,h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60,16.0/9.0,1,75);
+    glMatrixMode(GL_MODELVIEW);
+
+}
 void display(){
 
 	//clear the display
@@ -2929,7 +2952,7 @@ void display(){
 
 	float lightPosition1[4] = {-500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
-
+	camera->camera();
 	draw();
 	//drawCubeTexure(200,500,100,50,tx.texid1);
 	drawMouse();
@@ -2953,16 +2976,13 @@ int main(int argc, char **argv){
 	glutIdleFunc(idle);		//what you want to do in the idle time (when no drawing is occuring)
 
 	//ADD keyboard listeners:
-	glutKeyboardFunc(keyboardListener);
-	glutSpecialFunc(specialKeyListener);
-	//glutKeyboardUpFunc(keyUp);
-
-	//ADD mouse listeners:
+	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouseListener);
+   glutKeyboardUpFunc(keyboard_up);
+   glutReshapeFunc(reshape);
 	
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
-	cam.set(cam.eye,cam.look,cam.up);
 
 	glutMainLoop();		//The main loop of OpenGL
 	

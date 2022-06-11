@@ -1,49 +1,38 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Vector.h"
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 #define DELTA 1.0/2.9
 #define HEIGHT 1080
 #define WIDTH 1920
 #define zoom  350
+#include <GL/glut.h>
+#include <math.h>
 
+#define TO_RADIANS 3.14/180.0
 
-
-
-
-
-
-
-class Camera_class{
-   
-	private:
-   public:
-      Point3 eye, look;
-		Vector3 up;
-	   Vector3 u,v,n;
-	   double viewAngle,aspect,nearDist,farDist;
-
-		void setModelviewMatrix();
-		
-		void cameraMove(int x, int y);
-	   
-		Camera_class();
-	   void set(Point3 eye,Point3 look,Vector3 up);
-
-	   void slide(double delU,double delV,double delN);
-
-	   void roll(float angle);
-      
-
-	   void pitch(double angle);
-
-	   void yaw(double angle);
-
+//width and height of the window ( Aspect ratio 16:9 )
+struct Motion
+{
+    bool Forward,Backward,Left,Right;
 };
+class Camera {
+		  private:
+
+int width ;
+int height;
+
+float pitch = 0.0, yaw= 0.0;
+float camX=0.0,camZ=0.0;
+
+		  public:
+					 
+Motion motion;
+void passive_motion(int x,int y);
+   Camera(int w,int h);
+	void camera();
+};
+
+
 void mouseHandler(int x,int y);
 
 #endif

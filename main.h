@@ -29,7 +29,7 @@ float ctrlpoints2[4][3] =
 #include "Vector.h"
 #include "camera.h"
 
-Camera_class cam;
+Camera* camera;
 TexManager tx;
-void mouseHandler(int x,int y) {cam.cameraMove(x,y);}
+void mouseHandler(int x,int y) {camera->passive_motion(x,y);}
 #endif
