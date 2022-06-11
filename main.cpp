@@ -1,454 +1,21 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include "Vector.h"
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-#include <iostream>
-#define HEIGHT 1080
-#define WIDTH 1920
-#define XC  (WIDTH/2)
-#define YC  (HEIGHT/2)
-#define GROUND 1, 1, 1
-#define BLACK .4, .5, 1
-#define SKY_FRONT 0
-#define SKY_RIGHT 1
-#define SKY_LEFT 2
-#define SKY_BACK 3
-#define SKY_UP 4
-#define SKY_DOWN 5
-#define ANGLE 0.2
-#define SCALE 0.9
-#define DELTA 1.0/2.5
-#define RAND 0.01
-GLuint base_tex,tower_f;
+#include "main.h"
 
 
-//make a global variable -- for tracking the anglular position of camera
-double cameraAngle;			//in radian
-double cameraAngleDelta;
-double selfRot=0, uniRot=0,cyl_rotate=0,car_speed,cart_rotate;
-double wheel_1_rotate=0,wheel_2_rotate=0,wheel_3_rotate=0,wheel_4_rotate=0;
-double cameraHeight;	
-double cameraRadius;
-
-double uniRotDelta;	//in degree
-double speed;
 GLUquadricObj *quadric, *minercylinder;
-double wheel_x,wheel_y;
-int full_rot,move_key,car1_mov,car2_mov;
-double car1_spd,car2_spd,shp_spd=-390;
-double opn_angle,sky_rot,shp_rot_angle,e_x,e_y,e_z,wtr_y_trnslt,wtr_x_trnslt;
-int   brdg_opn,cam_rot,shp_dir=-1;
 
-float i_i;
 
-float zoom = 350;
-float rightAngle=0.0, leftAngle=0.0;
 
-bool show_strctr,shp_rot,lft_mov,frt_mov;
+
 
 //////////////////////////////////////////////
 //LOL WTH
-GLuint texid1,texid2,texid3,texid4,texid5,texid6,texid7,texid8,texid9,texid10;
-GLuint texid11,texid12,texid13,texid14,texid15,texid16,texid17,texid18,texid19,texid20;
-GLuint texid21,texid22,texid23,texid24,texid25,texid26,texid27,texid28,texid29,texid30;
-GLuint texid31,texid32,texid33,texid34,texid35,texid36,texid37,texid38,texid39,texid40;
-int skybox[6];
-int num_texture=-1;
 
-typedef struct tagBITMAPFILEHEADER {
-  uint16_t  bfType;
-  uint32_t bfSize;
-  uint16_t  bfReserved1;
-  uint16_t  bfReserved2;
-  uint32_t bfOffBits;
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
 
-typedef struct tagRGBTRIPLE {
-  uint8_t rgbtBlue;
-  uint8_t rgbtGreen;
-  uint8_t rgbtRed;
-} RGBTRIPLE;
 
-typedef struct tagBITMAPINFOHEADER {
-  uint32_t biSize;
-  unsigned int  biWidth;
-  unsigned int  biHeight;
-  uint16_t  biPlanes;
-  uint16_t  biBitCount;
-  uint32_t biCompression;
-  uint32_t biSizeImage;
-  unsigned int  biXPelsPerMeter;
-  unsigned int  biYPelsPerMeter;
-  uint32_t biClrUsed;
-  uint32_t biClrImportant;
-} BITMAPINFOHEADER, *PBITMAM_PINFOHEADER;
 
-int LoadBitmap(char *filename, int width, int height)
-{
-    int i,j=0;
-    FILE *l_file;
-    unsigned char *l_texture;
-    BITMAPINFOHEADER infoheader; 
-    RGBTRIPLE rgb;
 
-    num_texture++;
-    if((l_file=fopen(filename,"rb"))==NULL)return(-1);
 
-    // There's a SEGFAULT: Find it ;)
-    // fread(&fileheader,sizeof(fileheader),1,l_file);    
-    // fseek(l_file,sizeof(fileheader),SEEK_SET);
-    // fread(&infoheader,sizeof(infoheader),1,l_file);
-    
-    infoheader.biWidth = width;
-    infoheader.biHeight = height;
 
-    l_texture=(unsigned char*)malloc(infoheader.biWidth*infoheader.biHeight*4);
-
-    memset(l_texture,0,infoheader.biWidth * infoheader.biHeight*4);
-    //memset(l_texture,0,sizeof(l_texture));
-    //printf("4444444444\n");
-    for(i=0;i<infoheader.biWidth*infoheader.biHeight;i++)
-    {
-        fread(&rgb,sizeof(rgb),1,l_file);
-        l_texture[j+0]=rgb.rgbtRed;
-        l_texture[j+1]=rgb.rgbtGreen;
-        l_texture[j+2]=rgb.rgbtBlue;
-        l_texture[j+3]=255;
-        j+=4;
-    }
-    fclose(l_file);
-    glBindTexture(GL_TEXTURE_2D,num_texture);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
-    //�glTexParameterf(GL_TEXTURE_2D,�GL_TEXTURE_MIN_FILTER,�GL_LINEAR);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glTexImage2D(GL_TEXTURE_2D,0,4,infoheader.biWidth,infoheader.biHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,l_texture);
-    gluBuild2DMipmaps(GL_TEXTURE_2D,4,infoheader.biWidth,infoheader.biHeight,GL_RGBA,GL_UNSIGNED_BYTE,l_texture);
-    free(l_texture);
-    return(num_texture);
-}
-
-class Point3{
-public:
-	float x,y,z;
-	
-	void set(float dx,float dy, float dz)
-	{
-	  x=dx;
-	  y=dy;
-	  z=dz;
-	}
-
-	void set(Point3& p)
-	{
-	  x=p.x;
-	  y=p.y;
-	  z=p.z;
-	
-	}
-    
-	Point3(float xx,float yy,float zz)
-	{
-	  x=xx;
-	  y=yy;
-	  z=zz;
-	 
-	}
-    
-	Point3()
-	{
-	  x=0;
-	  y=0;
-	  z=0;
-	}
-
-};
-
-class Vector3{
-  public:
-    float x,y,z;
-	  
-    void set(float dx,float dy, float dz)
-    {
-          x=dx;
-          y=dy;
-          z=dz;
-    }
-	void set(Vector3 const  &v)
-	{
-    	  x=v.x;
-    	  y=v.y;
-    	  z=v.z;
-	
-	}
-    void flip()
-	{
-    	  x=-x;
-    	  y=-y;
-    	  z=-z;
-	
-	}
-	void setDiff(Point3& a,Point3& b)
-    {
-         x=a.x-b.x;
-    	 y=a.y-b.y;
-    	 z=a.z-b.z;
-   
-    }
-    void normalize()
-    {
-        double sizeSq = x*x+y*y+z*z;
-    	
-    	float d=(float)sqrt(sizeSq);
-    	x /= d;
-    	y /= d;
-    	z /= d;
-   
-    }
-
-    Vector3(float xx,float yy,float zz)
-	{
-    	 x=xx;
-    	 y=yy;
-    	 z=zz;
-	}
-
-    Vector3(Vector3 const &v)
-	{
-    	  x=v.x;
-    	  y=v.y;
-    	  z=v.z;
-	}
-    Vector3()
-	{
-    	  x=0;
-    	  y=0;
-    	  z=0;
-	}
-	float dot(Vector3 b)
-    {
-          return x*b.x+y*b.y+z*b.z;
-    }
-  
-    Vector3 cross(Vector3 b)
-    {
-          Vector3 to_ret= Vector3( float(y*b.z - z*b.y) , float(z*b.x - x*b.z) , float(x*b.y - y*b.x) );
-          return to_ret;
-    }
-};
-
-class Camera_class{
-   
-	private:
-   public:
-      Point3 eye, look,up;
-	   Vector3 u,v,n;
-	   double viewAngle,aspect,nearDist,farDist;
-
-		void setModelviewMatrix();
-		
-		void cameraMove(int x, int y);
-	   
-		Camera_class();
-	   void set(Point3 eye,Point3 look,Vector3 up);
-
-	   void slide(double delU,double delV,double delN);
-
-	   void roll(float angle);
-      
-
-	   void pitch(double angle);
-
-	   void yaw(double angle);
-
-}cam;
-Camera_class::Camera_class()
-{
-     
-}
-void mouseHandler(int x,int y){cam.cameraMove(x,y);}
-void Camera_class::cameraMove(int x,int y){
- 
-	double dx = x - WIDTH/2.0;
-	
-
-	yaw(dx*DELTA);
-	double dy = y  - HEIGHT/2.0;
-	double pitch = dy*DELTA;
-	if (pitch>M_PI/2){
-        pitch = M_PI/2 - 0.0001f;
-    }
-    else if (pitch<-1*M_PI/2) {
-        pitch =-1*M_PI/2 + 0.0001f;
-    }
-	this->pitch(pitch);
-
-	if(dx&&dy)glutWarpPointer(WIDTH/2,HEIGHT/2);
-	return;
-
-}
-
-void Camera_class::setModelviewMatrix(void)
-{
-
-        float m[16];
-		Vector3 eVec(eye.x,eye.y,eye.z);
-		m[0]=u.x; m[4]=u.y;  m[8]=u.z; m[12]=-eVec.dot(u);
-
-		m[1]=v.x; m[5]=v.y;  m[9]=v.z; m[13]=-eVec.dot(v);
-
-		m[2]=n.x; m[6]=n.y;  m[10]=n.z; m[14]=-eVec.dot(n);
-
-		m[3]=0;  m[7]=0;  m[11]=0; m[15]=1;
-
-		glMatrixMode(GL_MODELVIEW);
-
-		glLoadMatrixf(m);
-}
-
-void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
-{
-       eye.set(Eye);
-	   n.set(eye.x-look.x,eye.y-look.y,eye.z-look.z);
-	   u.set(up.cross(n));
-	   n.normalize();
-	   u.normalize();
-	   v.set(n.cross(u));
-	   //printf("\n%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",eye.x,eye.y,eye.z,	cam.look.x,cam.look.y,cam.look.z,	cam.up.x,cam.up.y,cam.up.z);
-	   //printf("\n%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f",eye.x,eye.y,eye.z,u.x,u.y,u.z,v.x,v.y,v.z,n.x,n.y,n.z);
-       setModelviewMatrix();
-
-}
-
-
-void Camera_class::slide(double delU,double delV,double delN)
-{
-		eye.x += delU*u.x+ delV*v.x + delN*n.x;
-		eye.y += delU*u.y+ delV*v.y + delN*n.y;
-		eye.z += delU*u.z+ delV*v.z + delN*n.z;
-
-		setModelviewMatrix();
-
-
-
-}
-
-
-void Camera_class::roll(float angle)
-{
-
-		float cs=cos(M_PI/180*angle);
-		float sn=sin(M_PI/180*angle);
-
-		Vector3 t(u);
-
-		u.set(cs*t.x-sn*v.x,cs*t.y-sn*v.y,cs*t.z-sn*v.z);
-		v.set(sn*t.x+cs*v.x,sn*t.y+cs*v.y,sn*t.z+cs*v.z);
-		
-        setModelviewMatrix();
-
-
-}
-
-
-void Camera_class::pitch(double angle)
-{
-
-
-	 double cs = cos( M_PI/180 * angle ) ;
-    double  sn = sin( M_PI/180 * angle ) ;
-    
-    Vector3 t( v ) ;
-
-    v.set( cs*t.x - sn*n.x, cs*t.y - sn*n.y, cs*t.z - sn*n.z ) ;
-    n.set( sn*t.x + cs*n.x, sn*t.y + cs*n.y, sn*t.z + cs*n.z ) ;
-
-	setModelviewMatrix() ;
-
-
-}
-
-
-
-void Camera_class::yaw(double angle)
-{
-
-
-
-	 double  cs = cos( M_PI/180 * angle ) ;
-    double  sn = sin( M_PI/180 * angle ) ;
-
-    Vector3 t( n ) ;
-
-    n.set( cs*t.x - sn*u.x, cs*t.y - sn*u.y, cs*t.z - sn*u.z ) ;
-    u.set( sn*t.x + cs*u.x, sn*t.y + cs*u.y, sn*t.z + cs*u.z ) ;
-
-	setModelviewMatrix() ;
-
-
-}
-////////////////////////////////////////////////
-GLfloat ctrlpoints[4][3] = {
-	{ 62.0, 0, 75.0}, { 4.0, 0, 103.0}, 
-	{16.0, 0, 103.0}, {-41.0, 0, 75.0},};
-
-GLfloat ctrlpoints2[4][3] = {
-	{ 50.0, 0, 40.0}, { 4.0, 0, 60.0}, 
-	{16.0, 0, 60.0}, {-30.0, 0, 40.0}};
-// cam;
-
-GLfloat a1=.9,a2=.9,a3=.9;
-GLfloat d1=.9,d2=.9,d3=.9;
-
-///////////////////////////////////////////////////
-
-
-
-
-Point3 eye(0,zoom,200);
-	
-Point3 look(0,0,100);
-
-Vector3 up(0,0,1);
-
-void loadBMPs(void)
-{
-    texid1=LoadBitmap("assets/front.bmp", 256, 128);
-    texid2=LoadBitmap("assets/left.bmp", 128, 256);
-    texid3=LoadBitmap("assets/right.bmp", 128, 256);
-    texid4=LoadBitmap("assets/minar_tiles.bmp", 192, 128);
-    texid5=LoadBitmap("assets/minar_gliph.bmp", 192, 128);
-    texid6=LoadBitmap("assets/dome_gliph.bmp", 256, 128);
-    texid7=LoadBitmap("assets/black_stone.bmp", 128, 128);
-    texid8=LoadBitmap("assets/big_dome.bmp", 512, 256);
-    texid9=LoadBitmap("assets/tree.bmp", 128, 128);
-    texid10=LoadBitmap("assets/grass.bmp", 256, 256);
-    texid11=LoadBitmap("assets/water.bmp", 512, 256);
-    texid12=LoadBitmap("assets/brick.bmp", 128, 128);
-    texid13=LoadBitmap("assets/tiles.bmp", 512, 64);
-    texid14=LoadBitmap("assets/small_gliphs.bmp", 256, 128);
-    texid15=LoadBitmap("assets/red_stone.bmp", 128, 128);
-    texid16=LoadBitmap("assets/octagon_side.bmp", 1024, 64);
-}
-
-void initSkybox(void)
-{
-  skybox[SKY_FRONT] = LoadBitmap("assets/txStormydays_front.bmp", 1024, 1024);
-  skybox[SKY_RIGHT] = LoadBitmap("assets/txStormydays_right.bmp", 1024, 1024);
-  skybox[SKY_LEFT] = LoadBitmap("assets/txStormydays_left.bmp", 1024, 1024);
-  skybox[SKY_BACK] = LoadBitmap("assets/txStormydays_back.bmp", 1024, 1024);
-  skybox[SKY_UP] = LoadBitmap("assets/txStormydays_up.bmp", 1024, 1024);
-  skybox[SKY_DOWN] = LoadBitmap("assets/txStormydays_down.bmp", 1024, 1024);
-}
-
-float white[]={1,1,1,1};
 double D = 50 * 50;
 void drawMouse(){
 		glMatrixMode(GL_PROJECTION);
@@ -551,7 +118,7 @@ void draw()
          glTranslatef(0,300,0);                     
          glPushMatrix();{
              glColor3fv(white);
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_RIGHT]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_RIGHT]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(-D,-D,-D);
                  glTexCoord2f(1,0); glVertex3f(+D,-D,-D);
@@ -559,7 +126,7 @@ void draw()
                  glTexCoord2f(0,1); glVertex3f(-D,+D,-D);
              glEnd();
   
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_FRONT]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_FRONT]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(+D,-D,-D);
                  glTexCoord2f(1,0); glVertex3f(+D,-D,+D);
@@ -567,7 +134,7 @@ void draw()
                  glTexCoord2f(0,1); glVertex3f(+D,+D,-D);
              glEnd();
   
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_LEFT]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_LEFT]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(+D,-D,+D);
                  glTexCoord2f(1,0); glVertex3f(-D,-D,+D);
@@ -575,7 +142,7 @@ void draw()
                  glTexCoord2f(0,1); glVertex3f(+D,+D,+D);
              glEnd();
              
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_BACK]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_BACK]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(-D,-D,+D);
                  glTexCoord2f(1,0); glVertex3f(-D,-D,-D);
@@ -584,7 +151,7 @@ void draw()
              glEnd();
 
              /* Top and Bottom */
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_UP]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_UP]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(-D,+D,-D);
                  glTexCoord2f(1,0); glVertex3f(+D,+D,-D);
@@ -592,7 +159,7 @@ void draw()
                  glTexCoord2f(0,1); glVertex3f(-D,+D,+D);
              glEnd();
              
-             glBindTexture(GL_TEXTURE_2D,skybox[SKY_DOWN]);
+             glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_DOWN]);
              glBegin(GL_QUADS);
                  glTexCoord2f(1,1); glVertex3f(+D,-D,-D);
                  glTexCoord2f(0,1); glVertex3f(-D,-D,-D);
@@ -612,7 +179,7 @@ void draw()
              /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D,texid1);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glEnable(GL_BLEND);
              glColor4f(1,1,1,1);
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -629,7 +196,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid2);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // left wall
                  glNormal3f(0,0,1);
                  glTranslatef(250,0,0);
@@ -641,7 +208,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid3);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // right wall                                                         
                  glNormal3f(0,0,1);
                  glBegin(GL_POLYGON);{
@@ -663,7 +230,7 @@ void draw()
              /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D,texid1);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glEnable(GL_BLEND);
              glColor4f(1,1,1,1);
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -680,7 +247,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid2);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // left wall
                  glNormal3f(0,0,1);
                  glTranslatef(250,0,0);
@@ -692,7 +259,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid3);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // right wall                                                         
                  glNormal3f(0,0,1);
                  glBegin(GL_POLYGON);{
@@ -714,7 +281,7 @@ void draw()
              /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D,texid1);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glEnable(GL_BLEND);
              glColor4f(1,1,1,1);
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -731,7 +298,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid2);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // left wall
                  glNormal3f(0,0,1);
                  glTranslatef(250,0,0);
@@ -743,7 +310,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid3);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // right wall                                                         
                  glNormal3f(0,0,1);
                  glBegin(GL_POLYGON);{
@@ -765,7 +332,7 @@ void draw()
              /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D,texid1);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glEnable(GL_BLEND);
              glColor4f(1,1,1,1);
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -782,7 +349,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid2);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // left wall
                  glNormal3f(0,0,1);
                  glTranslatef(250,0,0);
@@ -794,7 +361,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D,texid3);
+             glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // right wall                                                         
                  glNormal3f(0,0,1);
                  glBegin(GL_POLYGON);{
@@ -811,7 +378,7 @@ void draw()
          
          // Ceiling
          glPushMatrix();{
-             glBindTexture(GL_TEXTURE_2D,texid15);
+             glBindTexture(GL_TEXTURE_2D,tx.texid15);
              glTranslatef(0,0,90);
              glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-170, 0, 0);
@@ -1056,7 +623,7 @@ void draw()
              ////////////////////////////////Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // lower part of the minar
@@ -1065,7 +632,7 @@ void draw()
                  gluCylinder(quadric, 20, 20, 100, 6, 20);
              }glPopMatrix();
              
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1084,13 +651,13 @@ void draw()
              //////////////////////////////////////////////////////////////////////////////////////////////////
              ///////////////////////////////// Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
-             glBindTexture(GL_TEXTURE_2D, texid14);
+             glBindTexture(GL_TEXTURE_2D, tx.texid14);
              glPushMatrix();{                                                        // lower part of the dome
                  glTranslatef(0,0,150);
                  gluCylinder(quadric, 20, 20, 15, 6, 20);
              }glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.99,0.62,0.55);
                  glTranslatef(0,0,172);
@@ -1130,7 +697,7 @@ void draw()
              ////////////////////////////////Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // lower part of the minar
@@ -1139,7 +706,7 @@ void draw()
                  gluCylinder(quadric, 20, 20, 100, 6, 20);
              }glPopMatrix();
              
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1158,13 +725,13 @@ void draw()
              //////////////////////////////////////////////////////////////////////////////////////////////////
              ///////////////////////////////// Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              glPushMatrix();{                                                        // lower part of the dome
                  glTranslatef(0,0,150);
                  gluCylinder(quadric, 20, 20, 15, 6, 20);
              }glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,172);
@@ -1203,7 +770,7 @@ void draw()
              ////////////////////////////////Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // lower part of the minar
@@ -1212,7 +779,7 @@ void draw()
                  gluCylinder(quadric, 20, 20, 100, 6, 20);
              }glPopMatrix();
              
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1231,13 +798,13 @@ void draw()
              //////////////////////////////////////////////////////////////////////////////////////////////////
              ///////////////////////////////// Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              glPushMatrix();{                                                        // lower part of the dome
                  glTranslatef(0,0,150);
                  gluCylinder(quadric, 20, 20, 15, 6, 20);
              }glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,172);
@@ -1276,7 +843,7 @@ void draw()
              ////////////////////////////////Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // lower part of the minar
@@ -1285,7 +852,7 @@ void draw()
                  gluCylinder(quadric, 20, 20, 100, 6, 20);
              }glPopMatrix();
              
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1304,13 +871,13 @@ void draw()
              //////////////////////////////////////////////////////////////////////////////////////////////////
              ///////////////////////////////// Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
-             glBindTexture(GL_TEXTURE_2D, texid5);
+             glBindTexture(GL_TEXTURE_2D, tx.texid5);
              glPushMatrix();{                                                        // lower part of the dome
                  glTranslatef(0,0,150);
                  gluCylinder(quadric, 20, 20, 15, 6, 20);
              }glPopMatrix();
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,172);
@@ -1352,7 +919,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1373,7 +940,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1412,7 +979,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1432,7 +999,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1471,7 +1038,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1491,7 +1058,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1530,7 +1097,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1550,7 +1117,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1589,7 +1156,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1609,7 +1176,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1648,7 +1215,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1668,7 +1235,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1707,7 +1274,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1727,7 +1294,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1766,7 +1333,7 @@ void draw()
              //////////////////////////////// Small Minar Body Design//////////////////////////////////////////////////////////////
              ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
              
-             glBindTexture(GL_TEXTURE_2D, texid4);
+             glBindTexture(GL_TEXTURE_2D, tx.texid4);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // minar gliphs
@@ -1786,7 +1353,7 @@ void draw()
              ///////////////////////////////// Small Minar Dome Design///////////////////////////////////////////////
              //////////////////////////////////////////////////////////////////////////////////////////////////
          
-             glBindTexture(GL_TEXTURE_2D, texid6);
+             glBindTexture(GL_TEXTURE_2D, tx.texid6);
              glPushMatrix();{                                                        // main dome
                  glColor3f(0.34,0.91,0.74);
                  glTranslatef(0,0,156);
@@ -1819,7 +1386,7 @@ void draw()
          // Big Dome
          glPushMatrix();{
              glTranslatef(0,0,-10);
-             glBindTexture(GL_TEXTURE_2D, texid16);
+             glBindTexture(GL_TEXTURE_2D, tx.texid16);
              gluQuadricNormals(quadric,GLU_SMOOTH);
              gluQuadricTexture(quadric, GLU_TRUE);
              glPushMatrix();{                                                        // octagon 1
@@ -1867,7 +1434,7 @@ void draw()
                  gluCylinder(quadric, 50, 50, 30, 8, 2);
              }glPopMatrix();
              
-             glBindTexture(GL_TEXTURE_2D, texid8);
+             glBindTexture(GL_TEXTURE_2D, tx.texid8);
              glPushMatrix();{                                                        // big dome sphere
                  glTranslatef(0,-170,170);
                  glColor3f(0.34,0.91,0.74);
@@ -1913,7 +1480,7 @@ void draw()
              //Kella Floor            
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid7);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid7);
                  glTranslatef(0,-175,0);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-248, -248, 0);
@@ -1923,7 +1490,7 @@ void draw()
                  }glEnd();
              }glPopMatrix();
              glPushMatrix();{
-                 glBindTexture(GL_TEXTURE_2D, texid7);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid7);
                  glTranslatef(0,-175,-10);
                  glRotatef(45,0,0,1);
                  gluCylinder(quadric, 350, 350, 10, 4, 1);
@@ -1932,7 +1499,7 @@ void draw()
              // red brick boundary
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(0,-175,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-348, -348, 0);
@@ -1945,7 +1512,7 @@ void draw()
              //red brick 1
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(97,572,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-60, -400, 0);
@@ -1958,7 +1525,7 @@ void draw()
              //red brick 2
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(-97,572,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-60, -400, 0);
@@ -1972,7 +1539,7 @@ void draw()
              glPushMatrix();{
                  glColor4f(1,1,1,1);
                  glRotatef(90,0,0,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(-160,748,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-60, -400, 0);
@@ -1986,7 +1553,7 @@ void draw()
              glPushMatrix();{
                  glColor4f(1,1,1,1);
                  glRotatef(-90,0,0,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(160,748,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-60, -400, 0);
@@ -2000,7 +1567,7 @@ void draw()
              glPushMatrix();{
                  glColor4f(1,1,1,1);
                  glRotatef(180,0,0,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(0,923,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(-60, -400, 0);
@@ -2015,7 +1582,7 @@ void draw()
                  glColor4f(1,1,1,1);
                  glRotatef(180,0,0,1);
                  glTranslatef(147,-1000,-11);
-                 glBindTexture(GL_TEXTURE_2D, texid10);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
                      glTexCoord2f(0,10);  glVertex3f(0, 1200, 0);
@@ -2029,7 +1596,7 @@ void draw()
                  glColor4f(1,1,1,1);
                  glRotatef(180,0,0,1);
                  glTranslatef(-1255,-1000,-11);
-                 glBindTexture(GL_TEXTURE_2D, texid10);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
                      glTexCoord2f(0,10);  glVertex3f(0, 1200, 0);
@@ -2043,7 +1610,7 @@ void draw()
                  glColor4f(1,1,1,1);
                  glRotatef(180,0,0,1);
                  glTranslatef(-53,150,-11);
-                 glBindTexture(GL_TEXTURE_2D, texid10);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
                      glTexCoord2f(0,10);  glVertex3f(0, 1200, 0);
@@ -2057,7 +1624,7 @@ void draw()
                  glColor4f(1,1,1,1);
                  glRotatef(180,0,0,1);
                  glTranslatef(-1255,150,-11);
-                 glBindTexture(GL_TEXTURE_2D, texid10);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
                      glTexCoord2f(0,10);  glVertex3f(0, 1200, 0);
@@ -2072,7 +1639,7 @@ void draw()
          glPushMatrix();{
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2084,7 +1651,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2096,7 +1663,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,470,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2108,7 +1675,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2121,7 +1688,7 @@ void draw()
              //water
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid11);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid11);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2138,7 +1705,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,200,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2152,7 +1719,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,250,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2166,7 +1733,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,300,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2180,7 +1747,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,350,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2194,7 +1761,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,400,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2209,7 +1776,7 @@ void draw()
              //road after pool
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(-37,470,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2226,7 +1793,7 @@ void draw()
              glTranslatef(0,370,0);
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2238,7 +1805,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2250,7 +1817,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,470,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2262,7 +1829,7 @@ void draw()
              
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid13);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid13);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2275,7 +1842,7 @@ void draw()
              //water
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid11);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid11);
                  glTranslatef(-37,170,-30);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2292,7 +1859,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,200,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2306,7 +1873,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,250,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2320,7 +1887,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,300,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2334,7 +1901,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,350,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2348,7 +1915,7 @@ void draw()
                  glPushMatrix();{
                      glPushMatrix();{
                          glColor4f(1,1,1,1);
-                         glBindTexture(GL_TEXTURE_2D, texid5);
+                         glBindTexture(GL_TEXTURE_2D, tx.texid5);
                          glTranslatef(0,400,-30);
                          gluCylinder(quadric, 5, 5, 20, 10, 10);
                      }glPopMatrix();
@@ -2363,7 +1930,7 @@ void draw()
              //road after pool
              glPushMatrix();{
                  glColor4f(1,1,1,1);
-                 glBindTexture(GL_TEXTURE_2D, texid12);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid12);
                  glTranslatef(-37,470,-10);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2380,7 +1947,7 @@ void draw()
              // tree 1
              int tr_x = 200, tr_y = 200, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2393,7 +1960,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2410,7 +1977,7 @@ void draw()
              // tree 2
              tr_x = 300, tr_y = 200, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2423,7 +1990,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2440,7 +2007,7 @@ void draw()
              // tree 3
              tr_x = 200, tr_y = 400, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2453,7 +2020,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                     
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2470,7 +2037,7 @@ void draw()
              // tree 4
              tr_x = 200, tr_y = 600, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2483,7 +2050,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2500,7 +2067,7 @@ void draw()
              // tree 5
              tr_x = 200, tr_y = 800, tr_z = -30;
              glPushMatrix(); {                                                                                                           
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2513,7 +2080,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                 
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2530,7 +2097,7 @@ void draw()
              // tree 6
              tr_x = 400, tr_y = 100, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2543,7 +2110,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2560,7 +2127,7 @@ void draw()
              // tree 7
              tr_x = 400, tr_y = 0, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2573,7 +2140,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2590,7 +2157,7 @@ void draw()
              // tree 8
              tr_x = 400, tr_y = -300, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2603,7 +2170,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2620,7 +2187,7 @@ void draw()
              // tree 9
              tr_x = 400, tr_y = -400, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2633,7 +2200,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2650,7 +2217,7 @@ void draw()
              // tree 10
              tr_x = 250, tr_y = -600, tr_z = -30;
              glPushMatrix(); {                                                                                                            
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2663,7 +2230,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2680,7 +2247,7 @@ void draw()
              // tree 11
              tr_x = 150, tr_y = -600, tr_z = -30;
              glPushMatrix(); {                                                                                                           
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2693,7 +2260,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2710,7 +2277,7 @@ void draw()
              // tree 12
              tr_x = 150, tr_y = -800, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2723,7 +2290,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2740,7 +2307,7 @@ void draw()
              // tree 13
              tr_x = 150, tr_y = -1000, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2753,7 +2320,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                     
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2770,7 +2337,7 @@ void draw()
              // tree 14
              tr_x = 150, tr_y = -1200, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2783,7 +2350,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2800,7 +2367,7 @@ void draw()
              // tree 15
              tr_x = -150, tr_y = -1200, tr_z = -30;
              glPushMatrix(); {                                                                                                            
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2813,7 +2380,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                     
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2830,7 +2397,7 @@ void draw()
              // tree 16
              tr_x = -150, tr_y = -1000, tr_z = -30;
              glPushMatrix(); {                                                                                                            
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2843,7 +2410,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                  
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2860,7 +2427,7 @@ void draw()
              // tree 17
              tr_x = -150, tr_y = -800, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2873,7 +2440,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2890,7 +2457,7 @@ void draw()
              // tree 18
              tr_x = -150, tr_y = -600, tr_z = -30;
              glPushMatrix(); {                                                                                                          
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2903,7 +2470,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2920,7 +2487,7 @@ void draw()
              // tree 19
              tr_x = -250, tr_y = -600, tr_z = -30;
              glPushMatrix(); {                                                                                                           
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2933,7 +2500,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                   
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2950,7 +2517,7 @@ void draw()
              // tree 20
              tr_x = -400, tr_y = -400, tr_z = -30;
              glPushMatrix(); {                                                                                                           
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2963,7 +2530,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                     
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -2980,7 +2547,7 @@ void draw()
              // tree 21
              tr_x = -400, tr_y = -300, tr_z = -30;
              glPushMatrix(); {                                                                                                            
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -2993,7 +2560,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3010,7 +2577,7 @@ void draw()
              // tree 22
              tr_x = -400, tr_y = 0, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3023,7 +2590,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                  
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3040,7 +2607,7 @@ void draw()
              // tree 23
              tr_x = -400, tr_y = 100, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3053,7 +2620,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3070,7 +2637,7 @@ void draw()
              // tree 24
              tr_x = -300, tr_y = 200, tr_z = -30;
              glPushMatrix(); {                                                                                                            
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3083,7 +2650,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                     
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3100,7 +2667,7 @@ void draw()
              // tree 25
              tr_x = -200, tr_y = 200, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3113,7 +2680,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3130,7 +2697,7 @@ void draw()
              // tree 26
              tr_x = -200, tr_y = 400, tr_z = -30;
              glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3143,7 +2710,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3160,7 +2727,7 @@ void draw()
              // tree 27
              tr_x = -200, tr_y = 600, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3173,7 +2740,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                    
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3190,7 +2757,7 @@ void draw()
              // tree 28
              tr_x = -200, tr_y = 800, tr_z = -30;
              glPushMatrix(); {                                                                                                              
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glBegin(GL_POLYGON);{
                      glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
@@ -3203,7 +2770,7 @@ void draw()
                  }glEnd();
              } glPopMatrix();
              glPushMatrix(); {                                                                                                  
-                 glBindTexture(GL_TEXTURE_2D, texid9);
+                 glBindTexture(GL_TEXTURE_2D, tx.texid9);
                  glTranslatef(tr_x,tr_y,tr_z);
                  glRotatef(90,0,0,1);
                  glBegin(GL_POLYGON);{
@@ -3230,62 +2797,9 @@ void draw()
 
 }
 
-void animate(){
-    
-    if(cam_rot==1)
-    {
-        eye.x=sqrt(e_x*e_x+e_y*e_y)*cos(cameraAngle);
-        eye.y=sqrt(e_x*e_x+e_y*e_y)*sin(cameraAngle);
-        cam.set(eye,look,up);
-        cameraAngle+=.005;
-    }
-    else if(cam_rot==-1)
-    {
-        eye.x=eye.x;
-        eye.y=eye.y;
-        eye.z=eye.z;
-        cam.set(eye,look,up);
-        cam_rot=0;
-    }
-    else if(cam_rot==2)
-    {
-        cameraAngle+=.005;
-        eye.x=sqrt(e_x*e_x+e_y*e_y)*cos(cameraAngle);
-        eye.y=sqrt(e_x*e_x+e_y*e_y)*sin(cameraAngle);
-        cam.set(eye,look,up);
-        cam_rot=-1;
-    }
-    else if(cam_rot==3)
-    {
-        cameraAngle-=.005;
-        eye.x=sqrt(e_x*e_x+e_y*e_y)*cos(cameraAngle);
-        eye.y=sqrt(e_x*e_x+e_y*e_y)*sin(cameraAngle);
-        cam.set(eye,look,up);
-        cam_rot=-1;
-    }
-    else if(cam_rot==4)
-    {
-        cameraAngle+=.005;
-        eye.z=sqrt(e_z*e_z+e_y*e_y)*sin(cameraAngle);
-        eye.y=sqrt(e_z*e_z+e_y*e_y)*cos(cameraAngle);
-        cam.set(eye,look,up);
-        cam_rot=-1;
-    }
-    else if(cam_rot==5)
-    {
-        cameraAngle-=.005;
-        eye.z=sqrt(e_z*e_z+e_y*e_y)*sin(cameraAngle);
-        eye.y=sqrt(e_z*e_z+e_y*e_y)*cos(cameraAngle);
-        cam.set(eye,look,up);
-        cam_rot=-1;
-    }
-    
-    
-	//MISSING SOMETHING? -- YES: add the following
-	
-	glutPostRedisplay();	//this will call the display AGAIN
+void idle(){
+	glutPostRedisplay();	
 }
-
 void keyboardListener(unsigned char key, int x,int y){
 		  switch(key){
 			
@@ -3345,9 +2859,6 @@ void init(){
 
 	glutSetCursor(GLUT_CURSOR_NONE);	
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
-	cameraAngle = 0;	//// init the cameraAngle
-	cameraHeight = 150;
-	cameraRadius = 150;
 	
     quadric = gluNewQuadric();
     gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -3378,9 +2889,10 @@ void init(){
     glEnable(GL_NORMALIZE);
 
 
-    loadBMPs();
+
+   tx.loadBMPs();
     drawCubeTexur(5,199,23,0,12);
-	 initSkybox();
+	tx.initSkybox();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -3395,8 +2907,8 @@ void display(){
 	glClearColor(GROUND, 0);	//color black
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   	
-	GLfloat qaAmbientLight[]	= {a1, a2, a3, 1.0};
-	GLfloat qaDiffuseLight[]	= {d1, d2, d3, 1.0};
+	GLfloat qaAmbientLight[]	= {0.9, 0.9, 0.9, 1.0};
+	GLfloat qaDiffuseLight[]	= {0.9, 0.9, 0.9, 1.0};
 	GLfloat qaSpecularLight[]	= {1.0, 1.0, 1.0, 1.0};
 
    /////////////////////////////////////////////////////////////////////////////////
@@ -3418,16 +2930,11 @@ void display(){
 	float lightPosition1[4] = {-500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
-     if(!show_strctr){
-
-
 	draw();
-	//drawCubeTexure(200,500,100,50,texid1);
+	//drawCubeTexure(200,500,100,50,tx.texid1);
 	drawMouse();
 	glutSwapBuffers();
-
-}
-     glDisable (GL_BLEND);
+   glDisable (GL_BLEND);
 }
 
 int main(int argc, char **argv){
@@ -3443,7 +2950,7 @@ int main(int argc, char **argv){
 	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
 
 	glutDisplayFunc(display);	//display callback loadBMPstion
-	glutIdleFunc(animate);		//what you want to do in the idle time (when no drawing is occuring)
+	glutIdleFunc(idle);		//what you want to do in the idle time (when no drawing is occuring)
 
 	//ADD keyboard listeners:
 	glutKeyboardFunc(keyboardListener);
@@ -3455,7 +2962,7 @@ int main(int argc, char **argv){
 	
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
-	cam.set(eye,look,up);
+	cam.set(cam.eye,cam.look,cam.up);
 
 	glutMainLoop();		//The main loop of OpenGL
 	
