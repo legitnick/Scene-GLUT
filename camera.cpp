@@ -14,20 +14,20 @@ up = Vector3(0,0,1);
 
 void Camera_class::cameraMove(int x,int y){
  
-	double dx = x - WIDTH/2.0;
+	long double dx = x - WIDTH/2.0;
 	
 
-	yaw(dx*DELTA);
-	double dy = y  - HEIGHT/2.0;
-	double pitch = dy*DELTA;
-	if (pitch>M_PI/2){
-        pitch = M_PI/2 - 0.0001f;
+	long double dy = y  - HEIGHT/2.0;
+	long double pitch_v = dy*DELTA;
+	long double yaw_v = dx*DELTA;
+	if (pitch_v>M_PI/2){
+        pitch_v = M_PI/2 - 0.0001f;
     }
-    else if (pitch<-1*M_PI/2) {
-        pitch =-1*M_PI/2 + 0.0001f;
+    else if (pitch_v<-1*M_PI/2) {
+        pitch_v =-1*M_PI/2 + 0.0001f;
     }
-	this->pitch(pitch);
-
+	this->pitch(pitch_v);
+	this->yaw(yaw_v);
 	if(dx&&dy)glutWarpPointer(WIDTH/2,HEIGHT/2);
 	return;
 
@@ -66,12 +66,13 @@ void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 }
 
 
-void Camera_class::slide(double delU,double delV,double delN)
+void Camera_class::slide(long double delU,long double delV,long double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
 		eye.z += delU*u.z+ delV*v.z + delN*n.z;
-
+		long long coord = eye.x*10000000+eye.y*10000+eye.z;
+		//if(impasse.includes(eye.x,eye.y,eye.z))std::cout<<"Bump";
 		setModelviewMatrix();
 
 
@@ -96,12 +97,12 @@ void Camera_class::roll(float angle)
 }
 
 
-void Camera_class::pitch(double angle)
+void Camera_class::pitch(long double angle)
 {
 
 
-	 double cs = cos( M_PI/180 * angle ) ;
-    double  sn = sin( M_PI/180 * angle ) ;
+	 long double cs = cos( M_PI/180 * angle ) ;
+    long double  sn = sin( M_PI/180 * angle ) ;
     
     Vector3 t( v ) ;
 
@@ -115,13 +116,13 @@ void Camera_class::pitch(double angle)
 
 
 
-void Camera_class::yaw(double angle)
+void Camera_class::yaw(long double angle)
 {
 
 
 
-	 double  cs = cos( M_PI/180 * angle ) ;
-    double  sn = sin( M_PI/180 * angle ) ;
+	 long double  cs = cos( M_PI/180 * angle ) ;
+    long double  sn = sin( M_PI/180 * angle ) ;
 
     Vector3 t( n ) ;
 

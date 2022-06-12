@@ -27,6 +27,7 @@ Draw(TexManager& tex);
 					 float white[4]={1,1,1,1};
 
 
+void drawRoom(int w,int h, int l);
 void drawMouse(void);
 void drawCubeTexur(int a,int x, int y, int z,int texID);
 void drawCubeTexure(int a,int x, int y, int z,int texID);

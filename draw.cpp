@@ -65,7 +65,32 @@ void Draw::drawWall(int d,int a,int texID){
                  }glEnd();
              } glPopMatrix();
 }
+void Draw::drawRoom(int w,int h, int l){
+		  int a = 40; 
+	for(int i = 0;i<h;i++){
+			  for(int j = 0;j<w;j++){
+						 for(int k = 0;k<l;k++){
+									if(!k||!j||!i||(i==h+1)||(j==w+1)||(k==l+1)){
+											  drawCubeTexur(a,a*k,a*j,a*h,tex.texid1);
+									}
+						 }
+			  }
+	}
+}
 void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
+         glPushMatrix();{
+             glRotatef(0,0,0,0);
+             glTranslatef(0,0,0);
+             
+             //////////////////////////////////////////////////////////////////////////////////////////////////////
+             /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
+             //////////////////////////////////////////////////////////////////////////////////////////////////////
+             glEnable(GL_BLEND);
+             glColor4f(1,1,1,1);
+             glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+             glAlphaFunc(GL_GREATER,.1);
+             glEnable( GL_ALPHA_TEST );
+
              glPushMatrix();
 							glTranslatef(x,y,z);
 					  this->drawWall(0,a,texID);
@@ -83,5 +108,6 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
 					  this->drawWall(2,a,texID);
 					  glTranslatef(0,0,-a);
 							glTranslatef(-x,-y,-z);
-							glPopMatrix();
+			glPopMatrix();				glPopMatrix();
+			}
 }

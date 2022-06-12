@@ -3,9 +3,9 @@
 #include <cmath>
 class Point3{
 public:
-	float x,y,z;
+	double x,y,z;
 	
-	void set(float dx,float dy, float dz)
+	void set(double dx,double dy, double dz)
 	{
 	  x=dx;
 	  y=dy;
@@ -20,7 +20,7 @@ public:
 	
 	}
     
-	Point3(float xx,float yy,float zz)
+	Point3(double xx,double yy,double zz)
 	{
 	  x=xx;
 	  y=yy;
@@ -39,9 +39,9 @@ public:
 
 class Vector3{
   public:
-    float x,y,z;
+    double x,y,z;
 	  
-    void set(float dx,float dy, float dz)
+    void set(double dx,double dy, double dz)
     {
           x=dx;
           y=dy;
@@ -72,14 +72,14 @@ class Vector3{
     {
         double sizeSq = x*x+y*y+z*z;
     	
-    	float d=(float)sqrt(sizeSq);
+    	double d=(double)sqrt(sizeSq);
     	x /= d;
     	y /= d;
     	z /= d;
    
     }
 
-    Vector3(float xx,float yy,float zz)
+    Vector3(double xx,double yy,double zz)
 	{
     	 x=xx;
     	 y=yy;
@@ -98,14 +98,14 @@ class Vector3{
     	  y=0;
     	  z=0;
 	}
-	float dot(Vector3 b)
+	double dot(Vector3 b)
     {
           return x*b.x+y*b.y+z*b.z;
     }
   
     Vector3 cross(Vector3 b)
     {
-          Vector3 to_ret= Vector3( float(y*b.z - z*b.y) , float(z*b.x - x*b.z) , float(x*b.y - y*b.x) );
+          Vector3 to_ret= Vector3( double(y*b.z - z*b.y) , double(z*b.x - x*b.z) , double(x*b.y - y*b.x) );
           return to_ret;
     }
 };

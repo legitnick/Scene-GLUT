@@ -2694,6 +2694,7 @@ void idle(){
 	glutPostRedisplay();	
 }
 void keyboardListener(unsigned char key, int x,int y){
+	std::cout<<"camx "<<cam.eye.x<<"camy "<<cam.eye.y<<"camz "<<cam.eye.z<<'\n';
 		  switch(key){
 			
 		case 'w':	//reverse the rotation of camera
@@ -2823,13 +2824,20 @@ void display(){
 	float lightPosition1[4] = {-500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
-	draw();
+	//draw();
 	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
+	drw->drawRoom(5,4,5);
+				 drw->drawCubeTexur(200,500,20,10,tx.texid13);
 	drw->drawMouse();
+
+
 	glutSwapBuffers();
    glDisable (GL_BLEND);
 }
-
+void Timer(int ms){
+		  glutPostRedisplay();
+		  glutTimerFunc(15,Timer,0);
+}
 int main(int argc, char **argv){
 	glutInit(&argc,argv);
 	glutInitWindowSize(WIDTH, HEIGHT);
@@ -2843,8 +2851,8 @@ int main(int argc, char **argv){
 	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
 
 	glutDisplayFunc(display);	//display callback loadBMPstion
-	glutIdleFunc(idle);		//what you want to do in the idle time (when no drawing is occuring)
-
+	//glutIdleFunc(idle);		//what you want to do in the idle time (when no drawing is occuring)
+	glutTimerFunc(0, Timer, 0); 
 	//ADD keyboard listeners:
 	glutKeyboardFunc(keyboardListener);
 	glutSpecialFunc(specialKeyListener);
@@ -2856,7 +2864,7 @@ int main(int argc, char **argv){
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
 	cam.set(cam.eye,cam.look,cam.up);
-
+	glutFullScreen();
 	glutMainLoop();		//The main loop of OpenGL
 	
 	return 0;
