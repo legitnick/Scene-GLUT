@@ -1,115 +1,6 @@
 #include "main.h"
 
 
-GLUquadricObj *quadric, *minercylinder;
-
-
-
-
-
-//////////////////////////////////////////////
-//LOL WTH
-
-
-
-
-
-
-
-double D = 50 * 50;
-void drawMouse(){
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-glLoadIdentity();
-gluOrtho2D(0.0, 1.0, 1.0, 0.0);
-glMatrixMode(GL_MODELVIEW);
-
-glPushMatrix();
-glLoadIdentity();
-
-
-glBegin(GL_QUADS);
-    glColor3f(0.0f, 0.0f, 0.0f);
-	 float wpx = 5/(float)WIDTH;
-	 float hpx = 5/(float)HEIGHT;
-	 
-    glVertex2f(0.5 - wpx, 0.5-hpx);
-    glVertex2f(0.5 + wpx, 0.5-hpx);
-    glVertex2f(0.5 + wpx, 0.5+hpx);
-    glVertex2f(0.5 - wpx, 0.5+hpx);
-glEnd();
-// Making sure we can render 3d again
-glMatrixMode(GL_PROJECTION);
-glPopMatrix();
-glMatrixMode(GL_MODELVIEW);
-glPopMatrix();
-//cam.setModelviewMatrix();
-}
-void drawCubeTexure(int a,int x, int y, int z,int texID){
-		  glEnable(GL_TEXTURE_2D);
-		  {
-					 glBindTexture(GL_TEXTURE_2D,texID);
-					 glPushMatrix();{
-								glutSolidCube(a);
-					 }glPopMatrix();
-
-		  }glDisable(GL_TEXTURE_2D);
-}
-void drawCubeTexur(int a,int x, int y, int z,int texID){
-	
-		  glEnable(GL_TEXTURE_2D);{
-	glPushMatrix();
-	{  glRotatef(90,1,0,0);
-	glTranslatef(x,y,z);
-	glPushMatrix();
-	{	glColor3fv(white);
-	glBindTexture(GL_TEXTURE_2D,texID);
-	glBegin(GL_QUADS);
-                                      
-   glTexCoord2f(0,0); glVertex3f(-a,-a,-a);                                        
-   glTexCoord2f(1,0); glVertex3f(+a,-a,-a);                                        
-   glTexCoord2f(1,1); glVertex3f(+a,+a,-a);                                        
-   glTexCoord2f(0,1); glVertex3f(-a,+a,-a);  	
-
-             glBegin(GL_QUADS);
-                 glTexCoord2f(0,0); glVertex3f(+a,-a,-a);
-                 glTexCoord2f(1,0); glVertex3f(+a,-a,+a);
-                 glTexCoord2f(1,1); glVertex3f(+a,+a,+a);
-                 glTexCoord2f(0,1); glVertex3f(+a,+a,-a);
-             glEnd();
-  
-             glBegin(GL_QUADS);
-                 glTexCoord2f(0,0); glVertex3f(+a,-a,+a);
-                 glTexCoord2f(1,0); glVertex3f(-a,-a,+a);
-                 glTexCoord2f(1,1); glVertex3f(-a,+a,+a);
-                 glTexCoord2f(0,1); glVertex3f(+a,+a,+a);
-             glEnd();
-             
-             glBegin(GL_QUADS);
-                 glTexCoord2f(0,0); glVertex3f(-a,-a,+a);
-                 glTexCoord2f(1,0); glVertex3f(-a,-a,-a);
-                 glTexCoord2f(1,1); glVertex3f(-a,+a,-a);
-                 glTexCoord2f(0,1); glVertex3f(-a,+a,+a);
-             glEnd();
-
-             /* Top and Bottom */
-             glBegin(GL_QUADS);
-                 glTexCoord2f(0,0); glVertex3f(-a,+a,-a);
-                 glTexCoord2f(1,0); glVertex3f(+a,+a,-a);
-                 glTexCoord2f(1,1); glVertex3f(+a,+a,+a);
-                 glTexCoord2f(0,1); glVertex3f(-a,+a,+a);
-             glEnd();
-             
-             glBegin(GL_QUADS);
-                 glTexCoord2f(1,1); glVertex3f(+a,-a,-a);
-                 glTexCoord2f(0,1); glVertex3f(-a,-a,-a);
-                 glTexCoord2f(0,0); glVertex3f(-a,-a,+a);
-                 glTexCoord2f(1,0); glVertex3f(+a,-a,+a);
-             glEnd();
-}}
-         glPopMatrix();
-			}glDisable(GL_TEXTURE_2D);
-}
 void draw()
 {
      glEnable(GL_TEXTURE_2D);{
@@ -117,7 +8,8 @@ void draw()
          glRotatef(90,1,0,0);
          glTranslatef(0,300,0);                     
          glPushMatrix();{
-             glColor3fv(white);
+             glColor3fv(drw->white);
+   //			 drw->drawCubeTexur(5,199,23,0,12);
              glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_RIGHT]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(-D,-D,-D);
@@ -2889,10 +2781,10 @@ void init(){
     glEnable(GL_NORMALIZE);
 
 
-
+	
    tx.loadBMPs();
-    drawCubeTexur(5,199,23,0,12);
 	tx.initSkybox();
+	drw= new Draw(tx);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -2931,8 +2823,8 @@ void display(){
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
 	draw();
-	//drawCubeTexure(200,500,100,50,tx.texid1);
-	drawMouse();
+	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
+	drw->drawMouse();
 	glutSwapBuffers();
    glDisable (GL_BLEND);
 }

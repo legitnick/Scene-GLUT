@@ -17,7 +17,8 @@
 #define ANGLE 0.2
 
 
-float white[]={1,1,1,1};
+GLUquadricObj *quadric, *minercylinder;
+double D = 50 * 50;
 GLfloat ctrlpoints[4][3] = {
 	{ 62.0, 0, 75.0}, { 4.0, 0, 103.0}, 
 	{16.0, 0, 103.0}, {-41.0, 0, 75.0},};
@@ -28,7 +29,9 @@ float ctrlpoints2[4][3] =
 #include "loader.h"
 #include "Vector.h"
 #include "camera.h"
+#include "draw.h"
 
+Draw* drw;
 Camera_class cam;
 TexManager tx;
 void mouseHandler(int x,int y) {cam.cameraMove(x,y);}

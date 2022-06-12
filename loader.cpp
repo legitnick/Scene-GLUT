@@ -13,10 +13,6 @@ int LoadBitmap(char *filename, int width, int height)
     num_texture++;
     if((l_file=fopen(filename,"rb"))==NULL)return(-1);
 
-    // There's a SEGFAULT: Find it ;)
-    // fread(&fileheader,sizeof(fileheader),1,l_file);    
-    // fseek(l_file,sizeof(fileheader),SEEK_SET);
-    // fread(&infoheader,sizeof(infoheader),1,l_file);
     
     infoheader.biWidth = width;
     infoheader.biHeight = height;
@@ -24,9 +20,8 @@ int LoadBitmap(char *filename, int width, int height)
     l_texture=(unsigned char*)malloc(infoheader.biWidth*infoheader.biHeight*4);
 
     memset(l_texture,0,infoheader.biWidth * infoheader.biHeight*4);
-    //memset(l_texture,0,sizeof(l_texture));
-    //printf("4444444444\n");
-    for(i=0;i<infoheader.biWidth*infoheader.biHeight;i++)
+    
+	 for(i=0;i<infoheader.biWidth*infoheader.biHeight;i++)
     {
         fread(&rgb,sizeof(rgb),1,l_file);
         l_texture[j+0]=rgb.rgbtRed;
