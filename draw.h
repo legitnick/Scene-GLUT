@@ -21,6 +21,7 @@
 class Draw{
 		  private:
 					 TexManager tex;
+void drawWall(int d,int a,int texID);
 		  public:
 Draw(TexManager& tex);
 					 float white[4]={1,1,1,1};

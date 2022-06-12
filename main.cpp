@@ -77,16 +77,17 @@ void draw()
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
              glAlphaFunc(GL_GREATER,.1);
              glEnable( GL_ALPHA_TEST );
-         
-             glPushMatrix(); {                                                       // middle wall                                                            
-                 glNormal3f(0,0,1);
-                 glBegin(GL_POLYGON);{
-                     glTexCoord2f(0,0);  glVertex3f(-100, 0, 0);
-                     glTexCoord2f(0,1);  glVertex3f(-100, 0, 100);
-                     glTexCoord2f(1,1); glVertex3f(100, 0, 100);
-                     glTexCoord2f(1,0); glVertex3f(100, 0, 0);
-                 }glEnd();
-             } glPopMatrix();
+
+				 drw->drawCubeTexur(200,500,20,10,tx.texid13);
+//             glPushMatrix(); {                                                       // middle wall                                                            
+//                 glNormal3f(0,0,1);
+//                 glBegin(GL_POLYGON);{
+//                     glTexCoord2f(0,0);  glVertex3f(-100, 0, 0);
+//                     glTexCoord2f(0,1);  glVertex3f(-100, 0, 100);
+//                     glTexCoord2f(1,1); glVertex3f(100, 0, 100);
+//                     glTexCoord2f(1,0); glVertex3f(100, 0, 0);
+//                 }glEnd();
+//             } glPopMatrix();
          
              glBindTexture(GL_TEXTURE_2D,tx.texid1);
              glPushMatrix(); {                                                       // left wall

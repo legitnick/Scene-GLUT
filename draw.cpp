@@ -31,32 +31,57 @@ glPopMatrix();
 //cam.setModelviewMatrix();
 }
 void Draw::drawCubeTexure(int a,int x, int y, int z,int texID){
-		  glEnable(GL_TEXTURE_2D);
-		  {
-					 glBindTexture(GL_TEXTURE_2D,texID);
-					 glPushMatrix();{
-								glutSolidCube(a);
-					 }glPopMatrix();
-
-		  }glDisable(GL_TEXTURE_2D);
-}
-void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
-glPushMatrix();	
-		  glEnable(GL_TEXTURE_2D);{
-		  int tr_x = 400, tr_y = -400, tr_z = -30;
-             glPushMatrix(); {                                                                                                             
-                 glBindTexture(GL_TEXTURE_2D, tex.texid9);
-                 glTranslatef(tr_x,tr_y,tr_z);
+             glPushMatrix(); {                                                       // middle wall                                                            
+                 glNormal3f(0,0,1);
                  glBegin(GL_POLYGON);{
-                     glTexCoord2f(0,0);  glVertex3f(0, 0, 0);
-                     glTexCoord2f(0,0);  glVertex3f(-15, 0, 30);
-                     glTexCoord2f(0,1);  glVertex3f(-20, 0, 60);
-                     glTexCoord2f(0,1); glVertex3f(-5, 0, 90);
-                     glTexCoord2f(1,1); glVertex3f(5, 0, 90);
-                     glTexCoord2f(1,0); glVertex3f(20, 0, 60);
-                     glTexCoord2f(1,1); glVertex3f(15, 0, 30);
+                     glTexCoord2f(0,0);  glVertex3f(-100, 0, 0);
+                     glTexCoord2f(0,1);  glVertex3f(-100, 0, 100);
+                     glTexCoord2f(1,1); glVertex3f(100, 0, 100);
+                     glTexCoord2f(1,0); glVertex3f(100, 0, 0);
                  }glEnd();
              } glPopMatrix();
-			}glDisable(GL_TEXTURE_2D);
-		  glPopMatrix();
+}
+void Draw::drawWall(int d,int a,int texID){
+			int x{},y{},z{};
+			if(d == 0){
+					  x = a;
+					  z = a;
+			}else if(d == 1){
+					  y = a;
+					  z = a;
+			}else{
+					  x = a;
+					  y = a;
+			}
+							glPushMatrix(); {
+							// middle wall     
+					 glBindTexture(GL_TEXTURE_2D,texID);
+                 glNormal3f(0,0,1);
+                 glBegin(GL_POLYGON);{
+                     glTexCoord2f(0,0);  glVertex3f(y?x:0, 0, 0);
+                     glTexCoord2f(0,1);  glVertex3f(x, y, 0);
+                     glTexCoord2f(1,1); glVertex3f(y?0:x, y, z);
+                     glTexCoord2f(1,0); glVertex3f(0, 0, z);//this took all my creativity 
+                 }glEnd();
+             } glPopMatrix();
+}
+void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
+             glPushMatrix();
+							glTranslatef(x,y,z);
+					  this->drawWall(0,a,texID);
+					  glTranslatef(0,a,0);
+					  this->drawWall(0,a,texID);
+					  glTranslatef(0,-a,0);
+
+					  this->drawWall(1,a,texID);
+					  glTranslatef(a,0,0);
+					  this->drawWall(1,a,texID);
+					  glTranslatef(-a,0,0);
+
+					  this->drawWall(2,a,texID);
+					  glTranslatef(0,0,a);
+					  this->drawWall(2,a,texID);
+					  glTranslatef(0,0,-a);
+							glTranslatef(-x,-y,-z);
+							glPopMatrix();
 }
