@@ -2694,23 +2694,23 @@ void idle(){
 	glutPostRedisplay();	
 }
 void keyboardListener(unsigned char key, int x,int y){
-	std::cout<<"camx "<<cam.eye.x<<"camy "<<cam.eye.y<<"camz "<<cam.eye.z<<'\n';
+	std::cout<<"camx "<<cam->eye.x<<"camy "<<cam->eye.y<<"camz "<<cam->eye.z<<'\n';
 		  switch(key){
 			
 		case 'w':	//reverse the rotation of camera
-			cam.slide(0,0,-5);
+			cam->slide(0,0,-5);
 			break;
 			
 		case 's':	//reverse the rotation of camera
-			cam.slide(0,0,5);
+			cam->slide(0,0,5);
 			break;
 			
 		case 'd':	//toggle grids
-			cam.slide(5,0,0);
+			cam->slide(5,0,0);
 			break;
 			
 		case 'a':	//toggle grids
-			cam.slide(-5,0,0);
+			cam->slide(-5,0,0);
 			break;
 		case 27:	//ESCAPE KEY -- simply exit
 			exit(0);
@@ -2725,7 +2725,7 @@ void specialKeyListener(int key, int x,int y){
 }
 void Blink()
 {
-					 cam.slide(0,0,-160) ;
+					 cam->slide(0,0,-160) ;
 }
 void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of the screen (2D)
 	switch(button){
@@ -2783,10 +2783,10 @@ void init(){
     glEnable(GL_NORMALIZE);
 
 
-	
    tx.loadBMPs();
 	tx.initSkybox();
 	drw= new Draw(tx);
+   cam = new Camera_class(drw->getImpasse());	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -2863,7 +2863,7 @@ int main(int argc, char **argv){
 	
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
-	cam.set(cam.eye,cam.look,cam.up);
+	cam->set(cam->eye,cam->look,cam->up);
 	glutFullScreen();
 	glutMainLoop();		//The main loop of OpenGL
 	

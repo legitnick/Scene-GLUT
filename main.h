@@ -32,7 +32,7 @@ float ctrlpoints2[4][3] =
 #include "draw.h"
 
 Draw* drw;
-Camera_class cam;
+Camera_class* cam;
 TexManager tx;
-void mouseHandler(int x,int y) {cam.cameraMove(x,y);}
+void mouseHandler(int x,int y) {cam->cameraMove(x,y);}
 #endif

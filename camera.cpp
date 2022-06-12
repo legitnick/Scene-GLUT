@@ -1,17 +1,6 @@
 #include "camera.h"
 
 
-
-Camera_class::Camera_class()
-{
-     
-eye = Point3(0,350,200);
-	
-look = Point3 (0,0,100);
-
-up = Vector3(0,0,1);
-}
-
 void Camera_class::cameraMove(int x,int y){
  
 	long double dx = x - WIDTH/2.0;
@@ -51,6 +40,14 @@ void Camera_class::setModelviewMatrix(void)
 		glLoadMatrixf(m);
 }
 
+Camera_class::Camera_class(Impasse* impasse):impasse(impasse){
+     
+eye = Point3(0,zoom,200);
+	
+look = Point3 (0,0,100);
+
+up = Vector3(0,0,1);
+}
 void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 {
        eye.set(Eye);
@@ -71,8 +68,7 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
 		eye.z += delU*u.z+ delV*v.z + delN*n.z;
-		long long coord = eye.x*10000000+eye.y*10000+eye.z;
-		//if(impasse.includes(eye.x,eye.y,eye.z))std::cout<<"Bump";
+		if(impasse->Includes(eye))std::cout<<"Bump";
 		setModelviewMatrix();
 
 

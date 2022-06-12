@@ -2,6 +2,7 @@
 Draw::Draw(TexManager& tex){
 	this->tex = tex;
 }
+Impasse* Draw::getImpasse(){return impasse;}
 void Draw::drawMouse(){
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -65,6 +66,8 @@ void Draw::drawWall(int d,int a,int texID){
                  }glEnd();
              } glPopMatrix();
 }
+Draw::Draw(){this->impasse = new Impasse;}
+Draw::~Draw(){delete impasse;}
 void Draw::drawRoom(int w,int h, int l){
 		  int a = 40; 
 	for(int i = 0;i<h;i++){
@@ -92,7 +95,12 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
              glEnable( GL_ALPHA_TEST );
 
              glPushMatrix();
-							glTranslatef(x,y,z);
+				 Point3 pt1,pt2;
+				 pt1.set(x,y,z);
+				 pt2.set(x+a,y+a,z+a);
+				 impasse->Pushp(pt1);
+				 impasse->Pushp(pt2);
+				 glTranslatef(x,y,z);
 					  this->drawWall(0,a,texID);
 					  glTranslatef(0,a,0);
 					  this->drawWall(0,a,texID);
