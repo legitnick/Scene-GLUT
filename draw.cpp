@@ -1,6 +1,7 @@
 #include "draw.h"
 Draw::Draw(TexManager& tex){
 	this->tex = tex;
+	this->impasse = new Impasse();
 }
 Impasse* Draw::getImpasse(){return impasse;}
 void Draw::drawMouse(){
@@ -66,8 +67,7 @@ void Draw::drawWall(int d,int a,int texID){
                  }glEnd();
              } glPopMatrix();
 }
-Draw::Draw(){this->impasse = new Impasse;}
-Draw::~Draw(){delete impasse;}
+Draw::~Draw(){delete impasse;std::cout<<"del\n";}
 void Draw::drawRoom(int w,int h, int l){
 		  int a = 40; 
 	for(int i = 0;i<h;i++){

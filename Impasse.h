@@ -13,15 +13,17 @@
 
 struct Cube{
 		  bool Has(Point3& pt)const;
-		  Point3 pts[2];
+		  Point3* pts;
+		  ~Cube();
+		  Cube();
 };
 class Impasse{
 		  private:
-					 int i=0,j = 0;
-					 std::vector<Cube*> Areas;
+					 int i,j;
+					 std::vector<Cube> Areas;
 		  public:
 					 void Pushp(const Point3 pt);
-
+					 Impasse ();
 					 bool Includes(Point3& pt)const; 
 };
 

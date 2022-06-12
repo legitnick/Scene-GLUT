@@ -27,7 +27,6 @@ float ctrlpoints2[4][3] =
 	{16.0, 0, 60.0}, {-30.0, 0, 40.0}};
 
 #include "loader.h"
-#include "Vector.h"
 #include "camera.h"
 #include "draw.h"
 
