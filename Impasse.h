@@ -5,7 +5,9 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#include <memory>
 #include <iostream>
+#include <array>
 #include <vector>
 #define HEIGHT 1080
 #define WIDTH 1920
@@ -13,8 +15,7 @@
 
 struct Cube{
 		  bool Has(Point3& pt)const;
-		  Point3* pts;
-		  ~Cube();
+		  std::array<Point3,2> pts;
 		  Cube();
 };
 class Impasse{

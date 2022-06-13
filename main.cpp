@@ -2785,8 +2785,8 @@ void init(){
 
    tx.loadBMPs();
 	tx.initSkybox();
-	drw= new Draw(tx);
-   cam = new Camera_class(drw->getImpasse());	
+	drw=  std::make_shared<Draw>(tx);
+   cam = std::make_shared<Camera_class>(drw->getImpasse());	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 

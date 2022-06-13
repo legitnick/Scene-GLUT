@@ -1,10 +1,6 @@
 #include "Impasse.h"
 Cube::Cube(){
 		  std::cout<<"cb\n";
-		  pts = new Point3();
-}
-Cube::~Cube(){
-		  delete pts;
 }
 bool Cube::Has(Point3& pt)const{
 

@@ -9,7 +9,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-#include <iostream>
 
 #define HEIGHT 1080
 #define WIDTH 1920
@@ -30,8 +29,8 @@ float ctrlpoints2[4][3] =
 #include "camera.h"
 #include "draw.h"
 
-Draw* drw;
-Camera_class* cam;
+std::shared_ptr<Draw> drw;
+std::shared_ptr<Camera_class> cam;
 TexManager tx;
 void mouseHandler(int x,int y) {cam->cameraMove(x,y);}
 #endif
