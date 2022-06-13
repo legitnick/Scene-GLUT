@@ -9,7 +9,6 @@ void draw()
          glTranslatef(0,300,0);                     
          glPushMatrix();{
              glColor3fv(drw->white);
-   //			 drw->drawCubeTexur(5,199,23,0,12);
              glBindTexture(GL_TEXTURE_2D,tx.skybox[SKY_RIGHT]);
              glBegin(GL_QUADS);
                  glTexCoord2f(0,0); glVertex3f(-D,-D,-D);
@@ -2826,7 +2825,7 @@ void display(){
 
 	//draw();
 	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
-	drw->drawRoom(5,4,5);
+	//drw->drawRoom(5,4,5);
 				 drw->drawCubeTexur(200,500,20,10,tx.texid13);
 	drw->drawMouse();
 
@@ -2863,7 +2862,6 @@ int main(int argc, char **argv){
 	
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
-	cam->set(cam->eye,cam->look,cam->up);
 	glutFullScreen();
 	glutMainLoop();		//The main loop of OpenGL
 	

@@ -1,6 +1,7 @@
 #ifndef IMPASSE_H
 #define IMPASSE_H
 
+#include <climits>
 #include "Vector.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -13,19 +14,20 @@
 #define WIDTH 1920
 
 
-struct Cube{
-		  bool Has(Point3& pt)const;
-		  std::array<Point3,2> pts;
-		  Cube();
-};
 class Impasse{
 		  private:
+
+
+struct Cube{
+		  Point3 Has(const Point3& pt)const;
+		  std::array<Point3,2> pts;
+};
 					 int i,j;
 					 std::vector<Cube> Areas;
 		  public:
 					 void Pushp(const Point3 pt);
 					 Impasse ();
-					 bool Includes(Point3& pt)const; 
+					 Point3 Includes(const Point3& pt)const; 
 };
 
 #endif

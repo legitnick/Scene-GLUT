@@ -14,8 +14,9 @@
 class Camera_class{
    
 	private:
-		Impasse* impasse;
-	   Vector3 u,v,n;
+			  std::shared_ptr<Impasse> impasse;
+	   void gg();
+			  Vector3 u,v,n;
 	   long double viewAngle,aspect,nearDist,farDist;
    public:
       Point3 eye, look;
@@ -25,8 +26,7 @@ class Camera_class{
 		
 		void cameraMove(int x, int y);
 	   
-		Camera_class(Impasse* impasse);
-		~Camera_class(){delete impasse;}
+		Camera_class(std::shared_ptr<Impasse> impasse);
 	   void set(Point3 eye,Point3 look,Vector3 up);
 
 	   void slide(long double delU,long double delV,long double delN);

@@ -40,13 +40,14 @@ void Camera_class::setModelviewMatrix(void)
 		glLoadMatrixf(m);
 }
 
-Camera_class::Camera_class(Impasse* impasse):impasse(impasse){
+Camera_class::Camera_class(std::shared_ptr<Impasse> impasse):impasse(impasse){
      
 eye = Point3(0,zoom,200);
 	
 look = Point3 (0,0,100);
 
 up = Vector3(0,0,1);
+	set(eye,look,up);
 }
 void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 {
@@ -62,16 +63,24 @@ void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 
 }
 
-
+void Camera_class::gg(){std::cout<<"show death screen";}
 void Camera_class::slide(long double delU,long double delV,long double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
 		eye.z += delU*u.z+ delV*v.z + delN*n.z;
-		if(impasse->Includes(eye))std::cout<<"Bump";
-		setModelviewMatrix();
+		Point3 deltaPt = impasse->Includes(eye);
+		if(deltaPt.x)
+		{
+				  std::cout<<"Bump\n"<<"eye:"<<(int)eye.z<<(int)eye.y<<(int)eye.x<<
+				  "pt"<<deltaPt.z<<deltaPt.y<<deltaPt.x<<'\n';
+					eye.x = deltaPt.x;
+					eye.y = deltaPt.y;
+					eye.z = deltaPt.z;
+				  if(deltaPt.x == INT_MAX)gg();
+		}
 
-
+				  setModelviewMatrix();
 
 }
 

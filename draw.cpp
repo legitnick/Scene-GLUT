@@ -1,9 +1,9 @@
 #include "draw.h"
 Draw::Draw(TexManager& tex){
 	this->tex = tex;
-	this->impasse = new Impasse();
+	impasse = std::make_shared<Impasse>();
 }
-Impasse* Draw::getImpasse(){return impasse;}
+std::shared_ptr<Impasse> Draw::getImpasse(){return impasse;}
 void Draw::drawMouse(){
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -67,7 +67,6 @@ void Draw::drawWall(int d,int a,int texID){
                  }glEnd();
              } glPopMatrix();
 }
-Draw::~Draw(){delete impasse;std::cout<<"del\n";}
 void Draw::drawRoom(int w,int h, int l){
 		  int a = 40; 
 	for(int i = 0;i<h;i++){
@@ -84,10 +83,6 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
          glPushMatrix();{
              glRotatef(0,0,0,0);
              glTranslatef(0,0,0);
-             
-             //////////////////////////////////////////////////////////////////////////////////////////////////////
-             /////////////////////////////////Design of the Wall //////////////////////////////////////////////////
-             //////////////////////////////////////////////////////////////////////////////////////////////////////
              glEnable(GL_BLEND);
              glColor4f(1,1,1,1);
              glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -95,11 +90,12 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
              glEnable( GL_ALPHA_TEST );
 
              glPushMatrix();
-				 Point3 pt1,pt2;
-				 pt1.set(x,y,z);
-				 pt2.set(x+a,y+a,z+a);
-				 impasse->Pushp(pt1);
-				 impasse->Pushp(pt2);
+				 Point3 lBot,rTop;
+				 lBot.set(x,y,z);
+				 rTop.set(x+a,y+a,z+a);
+				 impasse->Pushp(lBot);
+				 impasse->Pushp(rTop);
+			//	 std::cout<<x<<y<<z<<'\n'<<a<<'\n';
 				 glTranslatef(x,y,z);
 					  this->drawWall(0,a,texID);
 					  glTranslatef(0,a,0);
