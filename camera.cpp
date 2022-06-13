@@ -70,13 +70,13 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
 		eye.z += delU*u.z+ delV*v.z + delN*n.z;
 		Point3 deltaPt = impasse->Includes(eye);
-		if(deltaPt.x)
+		if(deltaPt.x||deltaPt.y||deltaPt.z)
 		{
 				  std::cout<<"Bump\n"<<"eye:"<<(int)eye.z<<(int)eye.y<<(int)eye.x<<
-				  "pt"<<deltaPt.z<<deltaPt.y<<deltaPt.x<<'\n';
-					eye.x = deltaPt.x;
-					eye.y = deltaPt.y;
-					eye.z = deltaPt.z;
+				  "pt"<<deltaPt.z<<"z"<<deltaPt.y<<'y'<<deltaPt.x<<'x'<<'\n';
+					eye.x -= deltaPt.x;
+					eye.y -= deltaPt.y;
+					eye.z -= deltaPt.z;
 				  if(deltaPt.x == INT_MAX)gg();
 		}
 

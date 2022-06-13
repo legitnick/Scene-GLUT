@@ -1,17 +1,27 @@
 #include "Impasse.h"
+void maxToZero(double& a,double& b){
+		  if(a>b){a = 0;return;}
+		  b = 0;
+}
+void smallest(Point3& pt){
+		  maxToZero(pt.x,pt.y);
+		  if(pt.y){maxToZero(pt.x,pt.z);return;}
+		  maxToZero(pt.y,pt.z);
+}
 Point3 Impasse::Cube::Has(const Point3& pt)const{
 			Point3 deltaPt;
-					 if(this->pts[0].x<pt.x&&this->pts[1].x>pt.x){deltaPt.x = (pts[1].x+pts[0].x)/2>pt.x?pts[0].x:pts[1].x;}
-					 if(this->pts[0].y<pt.y&&this->pts[1].y>pt.y){deltaPt.y = (pts[1].y+pts[0].y)/2>pt.y?pts[0].y:pts[1].y;}
-					 if(this->pts[0].z<pt.z&&this->pts[1].z>pt.z){deltaPt.z = (pts[1].z+pts[0].z)/2>pt.z?pts[0].z:pts[1].z;}
-					 //if(deltaPt.x+deltaPt.y+deltaPt.z>20)return Point3(INT_MAX,0,0);
+					 if(pts[0].x<pt.x&&pts[1].x>pt.x){deltaPt.x = (pts[1].x+pts[0].x)/2>pt.x?(pt.x-pts[0].x):(pt.x-pts[1].x);}
+					 if(pts[0].y<pt.y&&pts[1].y>pt.y){deltaPt.y = (pts[1].y+pts[0].y)/2>pt.y?(pt.y-pts[0].y):(pt.y-pts[1].y);}
+					 if(pts[0].z<pt.z&&pts[1].z>pt.z){deltaPt.z = (pts[1].z+pts[0].z)/2>pt.z?pt.z-pts[0].z:pt.z-pts[1].z;}
+					 if(deltaPt.x&&deltaPt.y&&deltaPt.z){smallest(deltaPt);	 
+					 //if(deltaPt.x+deltaPt.y+deltaPt.z>10)return Point3(INT_MAX,0,0);
 					 return deltaPt;
+					 }
+					 return Point3();
 
 }
-Impasse::Impasse (){
-		  i = 0;
-		  j = 0;
-}
+
+
 Point3 Impasse::Includes(const Point3& pt)const {
 		  Point3 currPt;
 		  for(int i = 0;i<j;i++){
@@ -27,12 +37,12 @@ void Impasse::Pushp(const Point3 pt){
 			  
 			  Areas.push_back(cb);
 			
-		//	 this->Areas[j]->pts[i] = pt; 
-	//		 this->i++;
+		//	 Areas[j]->pts[i] = pt; 
+	//		 i++;
 
 	}
 		  //if(i<1){
-			 this->Areas[j].pts[i] = pt; 
-			 this->i++;
+			 Areas[j].pts[i] = pt; 
+			 i++;
 	//}	
 }

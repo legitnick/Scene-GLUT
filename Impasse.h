@@ -22,11 +22,10 @@ struct Cube{
 		  Point3 Has(const Point3& pt)const;
 		  std::array<Point3,2> pts;
 };
-					 int i,j;
+					 int i=0,j=0;
 					 std::vector<Cube> Areas;
 		  public:
 					 void Pushp(const Point3 pt);
-					 Impasse ();
 					 Point3 Includes(const Point3& pt)const; 
 };
 
