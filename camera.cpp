@@ -42,7 +42,7 @@ void Camera_class::setModelviewMatrix(void)
 
 Camera_class::Camera_class(std::shared_ptr<Impasse> impasse):impasse(impasse){
      
-eye = Point3(0,zoom,200);
+eye = Point3(0,350,200);
 	
 look = Point3 (0,0,100);
 

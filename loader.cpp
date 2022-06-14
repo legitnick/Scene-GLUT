@@ -2,30 +2,6 @@
 #include "loader.h"
 
 int num_texture=-1;
-int LoadPicture(char* filename)
-{
-    ILboolean success;
-     ILuint image;
-
-    ilGenImages(1, &image); /* Generation of one image name */
-     ilBindImage(image); /* Binding of image name */
-     success = ilLoadImage(filename); /* Loading of the image filename by DevIL */
-
-    if (success) /* If no error occured: */
-    {
-        /* Convert every colour component into unsigned byte. If your image contains alpha channel you can replace IL_RGB with IL_RGBA */
-           success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-        if (!success)
-           {
-                 return -1;
-           }
-    }
-    else
-        return -1;
-
-    return image;
-}
 int LoadBitmap(char *filename, int width, int height)
 {
     int i,j=0;
@@ -72,7 +48,7 @@ int LoadBitmap(char *filename, int width, int height)
 void TexManager::loadBMPs(void)
 {
     texid1=LoadBitmap("assets/green_circle.bmp", 184, 184);
-    texid9=LoadBitmap("assets/chess_prob.bmp", 128, 128);
+    texid9=LoadBitmap("assets/chess_prob.bmp", 225, 225);
     texid12=LoadBitmap("assets/brick.bmp", 128, 128);
 }
 

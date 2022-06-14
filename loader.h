@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-int LoadPicture(char* filename);
 
 int LoadBitmap(char *filename, int width, int height);
 typedef struct tagBITMAPFILEHEADER {

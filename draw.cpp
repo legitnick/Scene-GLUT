@@ -72,8 +72,8 @@ void Draw::drawRoom(int w,int h, int l){
 	for(int i = 0;i<h;i++){
 			  for(int j = 0;j<w;j++){
 						 for(int k = 0;k<l;k++){
-									if(!k||!j||!i||(i==h+1)||(j==w+1)||(k==l+1)){
-											  drawCubeTexur(a,a*k,a*j,a*h,tex.texid1);
+									if(!k||!j||!i||(i==h-1)||(j==w-1)||(k==l-1)){
+											  drawCubeTexur(a,a*k,a*j,a*i,tex.texid1);
 									}
 						 }
 			  }

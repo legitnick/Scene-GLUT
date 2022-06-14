@@ -1,12 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-
-#define zoom  350
-
-
-
-
 #include "Impasse.h"
 
 

@@ -2824,10 +2824,11 @@ void display(){
 	//draw();
 	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
 	//drw->drawRoom(5,4,5);
-				 drw->drawCubeTexur(200,500,20,10,tx.texid12);
-				 drw->drawCubeTexur(20,300,20,10,tx.texid12);
+				 drw->drawCubeTexur(225,-112,-112,-10,tx.texid9);
+				 drw->drawCubeTexur(20,300,20,10,tx.texid1);
 				 drw->drawCubeTexur(200,-300,20,10,tx.texid1);
 				 drw->drawCubeTexur(200,30,20,293,tx.texid2);
+				 drw->drawRoom(10,6,8);
 	drw->drawMouse();
 
 	glutSwapBuffers();
