@@ -5,8 +5,11 @@ void maxToZero(double& a,double& b){
 }
 void smallest(Point3& pt){
 		  maxToZero(pt.x,pt.y);
-		  if(pt.y){maxToZero(pt.x,pt.z);return;}
-		  maxToZero(pt.y,pt.z);
+		  if(pt.y){maxToZero(pt.y,pt.z);if(pt.x){if(pt.x>0){pt.x+=DELTA;return;}pt.x-=DELTA;return;}
+					 if(pt.z>0){pt.z+=DELTA;return;}pt.z-=DELTA;return;}
+		  maxToZero(pt.x,pt.z);
+		  //there is a slight increment to keep you from seeing through the walls
+
 }
 Point3 Impasse::Cube::Has(const Point3& pt)const{
 			Point3 deltaPt;

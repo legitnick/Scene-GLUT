@@ -12,7 +12,7 @@
 #include <vector>
 #define HEIGHT 1080
 #define WIDTH 1920
-
+#define DELTA 1/5.0
 
 class Impasse{
 		  private:

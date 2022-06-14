@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 void draw()
 {
      glEnable(GL_TEXTURE_2D);{
@@ -2783,7 +2782,6 @@ void init(){
 
 
    tx.loadBMPs();
-	tx.initSkybox();
 	drw=  std::make_shared<Draw>(tx);
    cam = std::make_shared<Camera_class>(drw->getImpasse());	
 	glMatrixMode(GL_PROJECTION);
@@ -2826,9 +2824,11 @@ void display(){
 	//draw();
 	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
 	//drw->drawRoom(5,4,5);
-				 drw->drawCubeTexur(200,500,20,10,tx.texid13);
+				 drw->drawCubeTexur(200,500,20,10,tx.texid12);
+				 drw->drawCubeTexur(20,300,20,10,tx.texid12);
+				 drw->drawCubeTexur(200,-300,20,10,tx.texid1);
+				 drw->drawCubeTexur(200,30,20,293,tx.texid2);
 	drw->drawMouse();
-
 
 	glutSwapBuffers();
    glDisable (GL_BLEND);

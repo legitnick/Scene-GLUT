@@ -2,6 +2,30 @@
 #include "loader.h"
 
 int num_texture=-1;
+int LoadPicture(char* filename)
+{
+    ILboolean success;
+     ILuint image;
+
+    ilGenImages(1, &image); /* Generation of one image name */
+     ilBindImage(image); /* Binding of image name */
+     success = ilLoadImage(filename); /* Loading of the image filename by DevIL */
+
+    if (success) /* If no error occured: */
+    {
+        /* Convert every colour component into unsigned byte. If your image contains alpha channel you can replace IL_RGB with IL_RGBA */
+           success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+        if (!success)
+           {
+                 return -1;
+           }
+    }
+    else
+        return -1;
+
+    return image;
+}
 int LoadBitmap(char *filename, int width, int height)
 {
     int i,j=0;
@@ -47,31 +71,8 @@ int LoadBitmap(char *filename, int width, int height)
 
 void TexManager::loadBMPs(void)
 {
-    texid1=LoadBitmap("assets/front.bmp", 256, 128);
-    texid2=LoadBitmap("assets/left.bmp", 128, 256);
-    texid3=LoadBitmap("assets/right.bmp", 128, 256);
-    texid4=LoadBitmap("assets/minar_tiles.bmp", 192, 128);
-    texid5=LoadBitmap("assets/minar_gliph.bmp", 192, 128);
-    texid6=LoadBitmap("assets/dome_gliph.bmp", 256, 128);
-    texid7=LoadBitmap("assets/black_stone.bmp", 128, 128);
-    texid8=LoadBitmap("assets/big_dome.bmp", 512, 256);
-    texid9=LoadBitmap("assets/tree.bmp", 128, 128);
-    texid10=LoadBitmap("assets/grass.bmp", 256, 256);
-    texid11=LoadBitmap("assets/water.bmp", 512, 256);
+    texid1=LoadBitmap("assets/green_circle.bmp", 184, 184);
+    texid9=LoadBitmap("assets/chess_prob.bmp", 128, 128);
     texid12=LoadBitmap("assets/brick.bmp", 128, 128);
-    texid13=LoadBitmap("assets/tiles.bmp", 512, 64);
-    texid14=LoadBitmap("assets/small_gliphs.bmp", 256, 128);
-    texid15=LoadBitmap("assets/red_stone.bmp", 128, 128);
-    texid16=LoadBitmap("assets/octagon_side.bmp", 1024, 64);
 }
 
-void TexManager::initSkybox(void)
-{
-  skybox = new int(6);
-  skybox[SKY_FRONT] = LoadBitmap("assets/txStormydays_front.bmp", 1024, 1024);
-  skybox[SKY_RIGHT] = LoadBitmap("assets/txStormydays_right.bmp", 1024, 1024);
-  skybox[SKY_LEFT] = LoadBitmap("assets/txStormydays_left.bmp", 1024, 1024);
-  skybox[SKY_BACK] = LoadBitmap("assets/txStormydays_back.bmp", 1024, 1024);
-  skybox[SKY_UP] = LoadBitmap("assets/txStormydays_up.bmp", 1024, 1024);
-  skybox[SKY_DOWN] = LoadBitmap("assets/txStormydays_down.bmp", 1024, 1024);
-}

@@ -2,7 +2,6 @@
 #define CAMERA_H
 
 
-#define DELTA 1.0/2.9
 #define zoom  350
 
 

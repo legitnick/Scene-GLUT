@@ -1,6 +1,7 @@
 #ifndef LOADER_H
 #define LOADER_H
 
+#include <IL/il.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -9,6 +10,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
+
+int LoadPicture(char* filename);
 
 int LoadBitmap(char *filename, int width, int height);
 typedef struct tagBITMAPFILEHEADER {
@@ -44,7 +47,6 @@ GLuint texid1,texid2,texid3,texid4,texid5,texid6,texid7,texid8,texid9,texid10;
 GLuint texid11,texid12,texid13,texid14,texid15,texid16,texid17,texid18,texid19,texid20;
 int* skybox;
 
-void initSkybox(void);
 void loadBMPs(void);
 };
 
