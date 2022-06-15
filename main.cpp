@@ -3,7 +3,7 @@ void idle(){
 	glutPostRedisplay();	
 }
 void Game::Logic(){
-		  if(cam->impasse->Sees(cam->getCameraV(),drw->objN)){game.pointed = true;return;};
+		  if(cam->impasse->Sees(cam->eye,cam->getCameraV(),drw->objN)){game.pointed = true;return;};
 		  game.selected = false;
 }
 void Game::keyboardListener(unsigned char key, int x,int y){
@@ -177,6 +177,7 @@ void display(){
 }
 void Timer(int ms){
 		  glutPostRedisplay();
+		  game.Logic();
 		  glutTimerFunc(15,Timer,0);
 }
 int main(int argc, char **argv){

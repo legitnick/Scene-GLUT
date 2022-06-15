@@ -19,14 +19,14 @@ class Impasse{
 
 
 struct Cube{
-		  Point3 Has(const Point3& pt)const;
+		  Point3 Has(const Point3 pt)const;
 		  std::array<Point3,2> pts;
 };
 					 int i=0,j=0;
 					 std::vector<Cube> Areas;
 		  public:
 		   
-		  bool Sees(Vector3 camDir,int j);
+		  bool Sees(Point3 eye,Vector3 camDir,int j);
 		  int Pushp(const Point3 pt);
 					 Point3 Includes(const Point3& pt)const; 
 };

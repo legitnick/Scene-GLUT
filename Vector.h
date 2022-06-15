@@ -3,8 +3,12 @@
 #include <cmath>
 class Point3{
 public:
-	double x,y,z;
-	
+	double x = 0,y = 0,z = 0;
+   Point3(){
+			  this->x  = 0;
+			  this->y = 0;
+			  this->z =  0;
+	}	
 	void set(double dx,double dy, double dz)
 	{
 	  x=dx;
@@ -28,22 +32,17 @@ public:
 	 
 	}
     
-	Point3()
-	{
-	  x=0;
-	  y=0;
-	  z=0;
-	}
 
 };
 
 class Vector3{
   public:
     double x,y,z;
-    void multiply(int k){
-				x*=k;
-				y*=k;
-				z*=k;
+    Vector3 static multiply(int k,Vector3 v){
+				v.x*=k;
+				v.y*=k;
+				v.z*=k;
+				return v;
 	 }	  
     void set(double dx,double dy, double dz)
     {
@@ -112,8 +111,8 @@ class Vector3{
           Vector3 to_ret= Vector3( double(y*b.z - z*b.y) , double(z*b.x - x*b.z) , double(x*b.y - y*b.x) );
           return to_ret;
     }
-	 Point3 move(Point3 in){
-				return Point3(x+in.x,y+in.y,z+in.z);
+	 Point3 static move(Point3& in,Vector3 v){
+				return Point3(v.x+in.x,v.y+in.y,v.z+in.z);
 	 }
 };
 #endif
