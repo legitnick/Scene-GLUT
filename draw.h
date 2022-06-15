@@ -15,6 +15,7 @@
 #define ANGLE 0.2
 class Draw{
 		  private:
+					 int x= 0,y = 0;
 					 std::shared_ptr<Impasse> impasse;
 void begin2D();
 void end2D();
@@ -24,8 +25,9 @@ void drawWall(int d,int a,int texID);
 					 TexManager tex;
 					 void drawObj();
 		  public:
+int objN;
 void drawLVL();
-
+void MoveObj(int x,int y);
 void showText(int x,int y, int z,const char* string);
 void drawCoordWall(int x,int y,int z, int d,int a,int texID);
 Draw(TexManager& tex);

@@ -40,7 +40,11 @@ public:
 class Vector3{
   public:
     double x,y,z;
-	  
+    void multiply(int k){
+				x*=k;
+				y*=k;
+				z*=k;
+	 }	  
     void set(double dx,double dy, double dz)
     {
           x=dx;
@@ -108,5 +112,8 @@ class Vector3{
           Vector3 to_ret= Vector3( double(y*b.z - z*b.y) , double(z*b.x - x*b.z) , double(x*b.y - y*b.x) );
           return to_ret;
     }
+	 Point3 move(Point3 in){
+				return Point3(x+in.x,y+in.y,z+in.z);
+	 }
 };
 #endif

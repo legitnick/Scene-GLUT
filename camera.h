@@ -7,14 +7,15 @@
 class Camera_class{
    
 	private:
-			  std::shared_ptr<Impasse> impasse;
 	   void gg();
+
 			  Vector3 u,v,n;
 	   long double viewAngle,aspect,nearDist,farDist;
    public:
+			  std::shared_ptr<Impasse> impasse;
       Point3 eye, look;
 		Vector3 up;
-		
+		Vector3 getCameraV();	
 		void setModelviewMatrix();
 		
 		void cameraMove(int x, int y);

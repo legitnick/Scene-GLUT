@@ -24,6 +24,7 @@ glPopMatrix();
 glMatrixMode(GL_MODELVIEW);
 glPopMatrix();
 }
+
 void Draw::showText(int x,int y, int z,const char* string){
 begin2D();
 		 glRasterPos3f(x,y,z);
@@ -209,10 +210,13 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
 			glPopMatrix();				glPopMatrix();
 			}
 }
+void Draw::MoveObj(int x,int y){this->x = x;this->y =y;}
 void Draw::drawObj(){
-
-		  
-		  glTranslatef(-120,190,0);
+		  Point3 lb(-120,190,0);
+		  Point3 rt(-130,290,35);
+		 objN = impasse->Pushp(lb); 
+		 impasse->Pushp(rt);
+		  glTranslatef(-120+x,190+y,0);
 		  glutSolidCone(10,20,10,10);
 		  glTranslatef(0,0,20);
 		  glRotatef(180,1,0,0);
@@ -225,16 +229,16 @@ void Draw::drawObj(){
 		  glTranslatef(0,0,-15);
 		  glTranslatef(10,0,0);
 		  glTranslatef(0,0,-20);
-		  glTranslatef(120,-190,0);
+		  glTranslatef(120-x,-190-y,0);
 }
 void Draw::drawLVL(){
-		  //drawCubeTexur(300,-150,150,80,tex.texid2);
-		  //drawCubeTexur(300,-150,150,-300,tex.texid2);
-		  //drawCubeTexur(310,-460,150,-200,tex.texid12);
-		  //drawCubeTexur(310,150,150,-200,tex.texid12);
-		  //drawCubeTexur(310,-150,-150,-200,tex.texid12);
-		  //drawCubeTexur(310,-150,450,-200,tex.texid12);
-		  //drawCoordWall(151,251,30,0,20,tex.texid1);
-		  //drawObj();
+		  drawCubeTexur(300,-150,150,80,tex.texid2);
+		  drawCubeTexur(300,-150,150,-300,tex.texid2);
+		  drawCubeTexur(310,-460,150,-200,tex.texid12);
+		  drawCubeTexur(310,150,150,-200,tex.texid12);
+		  drawCubeTexur(310,-150,-150,-200,tex.texid12);
+		  drawCubeTexur(310,-150,450,-200,tex.texid12);
+		  drawCoordWall(151,251,30,0,20,tex.texid1);
+		  drawObj();
 			showText(0,0,0,"yo");
 }

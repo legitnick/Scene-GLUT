@@ -22,6 +22,9 @@ void Camera_class::cameraMove(int x,int y){
 
 }
 
+		Vector3 Camera_class::getCameraV(){
+				  return n;
+		}
 void Camera_class::setModelviewMatrix(void)
 {
 

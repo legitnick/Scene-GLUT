@@ -9,6 +9,17 @@ void smallest(Point3& pt){
 		  maxToZero(pt.x,pt.z);
 		  //there is a slight increment to keep you from seeing through the walls
 }
+//a function which returns whether your camera is pointed towards a game object
+//rotate and uplift it a little bit in this case(also condition - mouse 5 pressed)
+//when pressing keys now just move the object
+bool Impasse::Sees(Point3 eye, Vector3 camDir,int j){
+		  for(int i = 0;i<1000;i+=5){
+					Point3 pt = Areas[j].Has(camDir*i);
+							  if(pt.x||pt.y||pt.z)return true;
+		  }
+		  return false;
+
+}
 Point3 Impasse::Cube::Has(const Point3& pt)const{
 			Point3 deltaPt;
 					 if((pts[0].x<pt.x+1)&&(pts[1].x>pt.x-1)){deltaPt.x = (pts[1].x+pts[0].x)/2>pt.x?(pt.x-pts[0].x+DELTA):(pt.x-pts[1].x+DELTA);}
@@ -32,7 +43,10 @@ Point3 Impasse::Includes(const Point3& pt)const {
 		  }
 		  return currPt;
 }
-void Impasse::Pushp(const Point3 pt){
+int Impasse::Pushp(const Point3 pt){
+
+		  Point3 isAlready = Includes(pt);
+		  if(!(isAlready.x||isAlready.y||isAlready.z)){
 		  if(i<3){
 			  if(i==2){j++;i = 0;}
 			  Cube  cb;
@@ -47,4 +61,6 @@ void Impasse::Pushp(const Point3 pt){
 			 Areas[j].pts[i] = pt; 
 			 i++;
 	//}	
+	}
+		  return j;
 }

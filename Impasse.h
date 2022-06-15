@@ -25,7 +25,9 @@ struct Cube{
 					 int i=0,j=0;
 					 std::vector<Cube> Areas;
 		  public:
-					 void Pushp(const Point3 pt);
+		   
+		  bool Sees(Vector3 camDir,int j);
+		  int Pushp(const Point3 pt);
 					 Point3 Includes(const Point3& pt)const; 
 };
 
