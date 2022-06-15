@@ -57,8 +57,6 @@ void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 	   n.normalize();
 	   u.normalize();
 	   v.set(n.cross(u));
-	   //printf("\n%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",eye.x,eye.y,eye.z,	cam.look.x,cam.look.y,cam.look.z,	cam.up.x,cam.up.y,cam.up.z);
-	   //printf("\n%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f",eye.x,eye.y,eye.z,u.x,u.y,u.z,v.x,v.y,v.z,n.x,n.y,n.z);
        setModelviewMatrix();
 
 }
@@ -68,7 +66,7 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
-		eye.z += delU*u.z+ delV*v.z + delN*n.z;
+		eye.z = 40;
 		Point3 deltaPt = impasse->Includes(eye);
 		if(deltaPt.x||deltaPt.y||deltaPt.z)
 		{

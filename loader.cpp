@@ -48,6 +48,7 @@ int LoadBitmap(char *filename, int width, int height)
 void TexManager::loadBMPs(void)
 {
     texid1=LoadBitmap("assets/green_circle.bmp", 184, 184);
+    texid2=LoadBitmap("assets/grey_wall.bmp", 366, 366);
     texid9=LoadBitmap("assets/chess_prob.bmp", 225, 225);
     texid12=LoadBitmap("assets/brick.bmp", 128, 128);
 }
