@@ -10,11 +10,16 @@ void absSmallest(Point3& pt){
 		  //there is a slight increment to keep you from seeing through the walls
 }
 //a function which returns whether your camera is pointed towards a game object
-//rotate and uplift it a little bit in this case(also condition - mouse 5 pressed)
+//: if temp camera Bumps , and the point is inluded in the object
+//rotate and uplift it a little bit in this case(also condition - mouse 5 pressed)||if x||y rotate, z = ...
+//
 //when pressing keys now just move the object
-bool Impasse::Sees(Point3 eye, Vector3 camDir,int j){
+Impasse::Cube Impasse::getObjCube(int j){
+					 return Areas[j];
+		  }   
+bool Impasse::Sees(Point3 eye, Point3 camDir,int j){
+		  Vector3 camVDir = Vector3(camDir);
 		  for(int i = 5;i<1000;i+=5){
-					 std::cout<<'j'<<j<<'\n';
 					Point3 pt = Areas[j].Has(Vector3::move(eye,Vector3::multiply(j,camDir)));
 							  if(pt.x||pt.y||pt.z){std::cout<<"Sees!\n";
 										 return true;}

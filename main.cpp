@@ -1,11 +1,26 @@
 #include "main.h"
-void idle(){
-	glutPostRedisplay();	
+bool Game::Sees(Camera_class& cam)const{
+		  for(int i =0;i<100;i++){
+					 std::cout<<"cam.xyz:"<<cam.eye.x<<' '<<cam.eye.y<<' '<<cam.eye.z<<'\n';
+					 Point3 currCamPos = cam.impasse->getObjCube(drw->objN).Has(cam.eye);
+								cam.slide(0,0,2);
+					 if(!i)
+					 std::cout<<"cam.impasse->getObjCube(drw->objN).xyz:"<<cam.impasse->getObjCube(drw->objN).pts[1].x<<' '<<cam.impasse->getObjCube(drw->objN).pts[1].y<<' '<<cam.impasse->getObjCube(drw->objN).pts[1].z<<'\n';
+					 if(currCamPos.x||currCamPos.y||currCamPos.z){std::cout<<'T'<<'\n';
+								return true;
+					 }
+		  }
+		  return false;
 }
 void Game::Logic(){
-		  std::cout<<"Logic?\n";
-		  if(cam->impasse->Sees(cam->eye,cam->getCameraV(),drw->objN)){game.pointed = true;return;};
+		  Camera_class tmp(cam->impasse);
+		  tmp.set(cam->eye,cam->look,cam->up);
+		  if(Sees(tmp)){
+					 std::cout<<"T\n";
+					 pointed = true;
+		  }
 		  game.selected = false;
+		  cam->slide(0,0,0);
 }
 void Game::keyboardListener(unsigned char key, int x,int y){
 		  if(!(selected&&pointed)){
@@ -74,7 +89,8 @@ void Game::mouseListener(int button, int state, int x, int y){	//x, y is the x-y
 			break;
 
 		case GLUT_RIGHT_BUTTON:
-			if(state == GLUT_DOWN){	
+			if(state == GLUT_DOWN){
+					  std::cout<<"ms5\n";
 					  selected = true;
 			}if(state == GLUT_UP){
 					  selected = false;
@@ -156,10 +172,10 @@ void display(){
     float lightPosition[4] = {500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-		  //game.Logic();
 	drw->drawLVL();
 	drw->drawMouse();
 
+		  game.Logic();
 	glutSwapBuffers();
    glDisable (GL_BLEND);
 }

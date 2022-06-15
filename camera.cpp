@@ -22,8 +22,8 @@ void Camera_class::cameraMove(int x,int y){
 
 }
 
-		Vector3 Camera_class::getCameraV(){
-				  return n;
+		Point3 Camera_class::getCameraV(){
+				  return look;
 		}
 void Camera_class::setModelviewMatrix(void)
 {
@@ -73,14 +73,12 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 		Point3 deltaPt = impasse->Includes(eye);
 		if(deltaPt.x||deltaPt.y||deltaPt.z)
 		{
-				  std::cout<<"Bump\n"<<"eye:"<<(int)eye.z<<(int)eye.y<<(int)eye.x<<
-				  "pt"<<deltaPt.z<<"z"<<deltaPt.y<<'y'<<deltaPt.x<<'x'<<'\n';
 					eye.x -= deltaPt.x;
 					eye.y -= deltaPt.y;
 					eye.z -= deltaPt.z;
 				  if(deltaPt.x == INT_MAX)gg();
 		}
-
+		eye.z = 40;
 				  setModelviewMatrix();
 
 }

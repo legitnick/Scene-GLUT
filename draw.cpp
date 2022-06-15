@@ -97,6 +97,9 @@ void Draw::drawWall(int d,int a,int texID){
              } glPopMatrix();
 }
 void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
+				 Point3 lBot(x,y,z),rTop(x+a,y+a,z+a);
+				 impasse->Pushp(lBot);
+				 impasse->Pushp(rTop);
          glPushMatrix();{
              glRotatef(0,0,0,0);
              glTranslatef(0,0,0);
@@ -107,11 +110,6 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
              glEnable( GL_ALPHA_TEST );
 
              glPushMatrix();
-				 Point3 lBot(0,0,0),rTop(0,0,0);
-				 lBot.set(x,y,z);
-				 rTop.set(x+a,y+a,z+a);
-				 impasse->Pushp(lBot);
-				 impasse->Pushp(rTop);
 				 glTranslatef(x,y,z);
 					  this->drawWall(0,a,texID);
 					  glTranslatef(0,a,0);
@@ -135,11 +133,11 @@ void Draw::MoveObj(int x,int y){this->x = x;this->y =y;}
 void Draw::drawObj(){
 		  Point3 lb(-120,190,0);
 		  Point3 rt(-130,290,35);
-		if(!objN){
-		 objN = impasse->Pushp(lb)/2; 
-		 impasse->Pushp(rt);
-		}
+		  if(!objN){objN = impasse->Pushp(lb)/2; 
+		  impasse->Pushp(rt);}
 		  glTranslatef(-120+x,190+y,0);
+		  double rotation =  (x&&y)?sin(glutGet(GLUT_ELAPSED_TIME)):0;
+		  glRotatef(rotation,0,1,0);
 		  glutSolidCone(10,20,10,10);
 		  glTranslatef(0,0,20);
 		  glRotatef(180,1,0,0);
@@ -152,6 +150,7 @@ void Draw::drawObj(){
 		  glTranslatef(0,0,-15);
 		  glTranslatef(10,0,0);
 		  glTranslatef(0,0,-20);
+		  glRotatef(-rotation,0,1,0);
 		  glTranslatef(120-x,-190-y,0);
 }
 void Draw::drawLVL(){
@@ -162,5 +161,5 @@ void Draw::drawLVL(){
 		  drawCubeTexur(310,-150,-150,-200,tex.texid12);
 		  drawCubeTexur(310,-150,450,-200,tex.texid12);
 		  drawCoordWall(151,251,30,0,20,tex.texid1);
-//		  drawObj();
+		  drawObj();
 }

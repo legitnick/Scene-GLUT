@@ -36,7 +36,13 @@ public:
 };
 
 class Vector3{
+
   public:
+			 Vector3(Point3 pt){
+						x = pt.x;
+						y = pt.y;
+						z = pt.z;
+			 }
     double x,y,z;
     Vector3 static multiply(int k,Vector3 v){
 				v.x*=k;

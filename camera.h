@@ -15,7 +15,7 @@ class Camera_class{
 			  std::shared_ptr<Impasse> impasse;
       Point3 eye, look;
 		Vector3 up;
-		Vector3 getCameraV();	
+		Point3 getCameraV();	
 		void setModelviewMatrix();
 		
 		void cameraMove(int x, int y);
