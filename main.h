@@ -14,7 +14,7 @@ void mouseListener(int button, int state, int x, int y);
 void keyboardListener(unsigned char key,int x,int y); 
 }game;
 
-GLUquadricObj *quadric, *minercylinder;
+GLUquadricObj *quadric;
 GLfloat ctrlpoints[4][3] = {
 	{ 62.0, 0, 75.0}, { 4.0, 0, 103.0}, 
 	{16.0, 0, 103.0}, {-41.0, 0, 75.0},};

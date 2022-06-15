@@ -3,6 +3,7 @@ void idle(){
 	glutPostRedisplay();	
 }
 void Game::Logic(){
+		  std::cout<<"Logic?\n";
 		  if(cam->impasse->Sees(cam->eye,cam->getCameraV(),drw->objN)){game.pointed = true;return;};
 		  game.selected = false;
 }
@@ -11,25 +12,23 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 		  switch(key){
 			
 		case 'w':	//reverse the rotation of camera
-			cam->slide(0,0,-5);
+			cam->slide(0,0,-3);
 			break;
 			
 		case 's':	//reverse the rotation of camera
-			cam->slide(0,0,5);
+			cam->slide(0,0,3);
 			break;
 			
 		case 'd':	//toggle grids
-			cam->slide(5,0,0);
+			cam->slide(3,0,0);
 			break;
 			
 		case 'a':	//toggle grids
-			cam->slide(-5,0,0);
+			cam->slide(-3,0,0);
 			break;
 		case '-':
-			frustum+=3;
 			break;
 		case '+':
-			frustum-=3;
 			break;
 		case 27:	//ESCAPE KEY -- simply exit
 			exit(0);
@@ -80,6 +79,7 @@ void Game::mouseListener(int button, int state, int x, int y){	//x, y is the x-y
 			}if(state == GLUT_UP){
 					  selected = false;
 			}
+			
 			break;
 
 		case GLUT_MIDDLE_BUTTON:
@@ -96,8 +96,6 @@ void init(){
 	glutSetCursor(GLUT_CURSOR_NONE);	
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
 	
-    quadric = gluNewQuadric();
-    gluQuadricDrawStyle(quadric, GLU_FILL);
 	glEnable(GL_NORMALIZE);
 	glClearColor(GROUND, 0);
 	
@@ -133,6 +131,7 @@ void init(){
 
 	gluPerspective(70,	1,	0.1,	10000.0);
 
+	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
 }
 
 void display(){
@@ -151,24 +150,13 @@ void display(){
 	glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
 
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, qaAmbientLight);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, qaDiffuseLight);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, qaSpecularLight);
 
 
 
     float lightPosition[4] = {500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-
-	float lightPosition1[4] = {-500, 500, 500.0, 1.0};
-	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
-
-	//draw();
-	//drw->drawCubeTexure(200,500,100,50,tx.texid1);
-	//drw->drawRoom(5,4,5);
-				// drw->drawRoom(10,6,8);
-				 //drw->drawCoordWall(5*40,9*40-1,4*40,0,20,tx.texid1);
+		  //game.Logic();
 	drw->drawLVL();
 	drw->drawMouse();
 
@@ -177,7 +165,6 @@ void display(){
 }
 void Timer(int ms){
 		  glutPostRedisplay();
-		  game.Logic();
 		  glutTimerFunc(15,Timer,0);
 }
 int main(int argc, char **argv){
@@ -190,7 +177,6 @@ int main(int argc, char **argv){
 
     init();
 
-	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
 
 	glutDisplayFunc(display);	//display callback loadBMPstion
 	//glutIdleFunc(idle);		//what you want to do in the idle time (when no drawing is occuring)

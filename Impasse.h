@@ -28,7 +28,7 @@ struct Cube{
 		   
 		  bool Sees(Point3 eye,Vector3 camDir,int j);
 		  int Pushp(const Point3 pt);
-					 Point3 Includes(const Point3& pt)const; 
+		  Point3 Includes(const Point3& pt)const; 
 };
 
 #endif

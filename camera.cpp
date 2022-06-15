@@ -69,7 +69,7 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
-		eye.z = 40;
+		eye.z += delU*u.z+ delV*v.z + delN*n.z;
 		Point3 deltaPt = impasse->Includes(eye);
 		if(deltaPt.x||deltaPt.y||deltaPt.z)
 		{

@@ -111,7 +111,7 @@ class Vector3{
           Vector3 to_ret= Vector3( double(y*b.z - z*b.y) , double(z*b.x - x*b.z) , double(x*b.y - y*b.x) );
           return to_ret;
     }
-	 Point3 static move(Point3& in,Vector3 v){
+	 Point3 static move(Point3 in,Vector3 v){
 				return Point3(v.x+in.x,v.y+in.y,v.z+in.z);
 	 }
 };
