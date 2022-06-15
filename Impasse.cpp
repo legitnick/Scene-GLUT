@@ -14,7 +14,7 @@ void smallest(Point3& pt){
 //when pressing keys now just move the object
 bool Impasse::Sees(Point3 eye, Vector3 camDir,int j){
 		  for(int i = 0;i<1000;i+=5){
-					Point3 pt = Areas[j].Has(camDir*i);
+					Point3 pt = Areas[j].Has(multiply(Camdir,j));
 							  if(pt.x||pt.y||pt.z)return true;
 		  }
 		  return false;
