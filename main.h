@@ -7,8 +7,6 @@
 #include <fstream>
 
 class Game{
-long int ms = 0;
-short gameCount = 0;
 		  bool pointed = false;
 bool selected = false;
 void Quit();
@@ -18,6 +16,7 @@ void ShowStats();
 		  public:
 bool Sees(Camera_class & cam)const;
 
+long int ms = 0;
 bool gg = false,wp = true;
 void Logic();
 void mouseListener(int button, int state, int x, int y);

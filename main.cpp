@@ -29,27 +29,34 @@ void Game::WriteStats(){
   if (myfile.is_open())
   {
 			 int i = 0;
-    while ( getline (myfile,line) )
+    while (i<2 )
     {
+		getline (myfile,line);
+				if(line.size()){
+						  std::cout<<"any";
 				long int num  = stoi(line);
-				if(i==0)num=gameCount;
+				if(i==0)num++;
 				if(i==1)num += ms;
-				i++;
 				std::string newline = std::to_string(num);
-				line.replace(0,line.size(),newline);
+				line.replace(line.begin(),line.end(),newline);
+				}else {
+		  myfile<<"1\n"<<ms<<'\n';
+		  break;
+				}
+				i++;
     }
-    myfile.close();
+    myfile << "This is another line.\n";
   }
 
-  else std::cout << "Unable to open file";
-		  myfile<<gameCount<<'\n'<<ms;
+  else std::cout << "Unable to open file\n";
 		  myfile.close();
 }
 void Game::ShowStats(){
 		  std::string line;
-		  std::ifstream myfile ("example.txt");
+		  std::ifstream myfile ("statistics.txt");
   if (myfile.is_open())
   {
+			 std::cout<<"file open!\n";
     while ( getline (myfile,line) )
     {
 				std::cout << line << '\n';
@@ -57,11 +64,10 @@ void Game::ShowStats(){
     myfile.close();
   }
 
-  else std::cout << "Unable to open file";
+  else std::cout << "Unable to open file\n";
 
 }
 void Game::Quit(){
-		  gameCount++;
 		  WriteStats();
 		  ShowStats();
 			exit(0);
@@ -91,7 +97,7 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 		case '+':
 			break;
 		case 27:	//ESCAPE KEY -- simply exit
-		game.quit();
+		game.Quit();
 			break;
 
 		default:
@@ -115,7 +121,10 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 		case 'a':	//toggle grids
 			drw->MoveObj(-5,0);
 			break;
-
+		case 27:	//ESCAPE KEY -- simply exit
+		game.Quit();
+		default:
+		break;
 		}}
 }
 
