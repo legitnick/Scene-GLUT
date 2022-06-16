@@ -15,8 +15,7 @@ void WriteStats();
 void ShowStats();
 		  public:
 bool Sees(Camera_class & cam)const;
-
-long int ms = 0;
+int ms;
 bool gg = false,wp = true;
 void Logic();
 void mouseListener(int button, int state, int x, int y);

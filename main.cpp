@@ -22,41 +22,48 @@ void Game::Logic(){
 		  cam->slide(0,0,0);
 }
 }
-void Game::WriteStats(){
-		  std::fstream myfile;
-		  myfile.open("statistics.txt");
-		  std::string line;
+std::array<std::string,2>readFile(){
+
+
+		  std::array<std::string,2> lines;
+		  std::ifstream myfile ("statistics.txt");
+		  int i = 0;
   if (myfile.is_open())
   {
-			 int i = 0;
-    while (i<2 )
-    {
-		getline (myfile,line);
-				if(line.size()){
-						  std::cout<<"any";
-				long int num  = stoi(line);
-				if(i==0)num++;
-				if(i==1)num += ms;
-				std::string newline = std::to_string(num);
-				line.replace(line.begin(),line.end(),newline);
-				}else {
-		  myfile<<"1\n"<<ms<<'\n';
-		  break;
-				}
-				i++;
-    }
-    myfile << "This is another line.\n";
+    while ( getline (myfile,lines[i]) )i++;
+    myfile.close();
   }
 
   else std::cout << "Unable to open file\n";
-		  myfile.close();
+  return lines;
+}
+void Game::WriteStats(){
+		  std::array<std::string,2> lines = readFile();
+		  std::ofstream file("statistics.txt");
+		  std::string line;
+		  if(file.is_open()){
+					 for(auto line:lines){
+					 if(line.size())
+					 {
+								int num = stoi(line);
+								if(num>300)num+=ms;
+								else num++;
+								file<<std::to_string(num)<<"\n";
+					 }else{
+								std::cout<<"init\n";
+								file<<std::to_string(ms)<<"\n1\n";
+					 }
+					 }
+		  }else{
+					 std::cout<<"file not open!\n";
+		  }
+		  file.close();
 }
 void Game::ShowStats(){
 		  std::string line;
 		  std::ifstream myfile ("statistics.txt");
   if (myfile.is_open())
   {
-			 std::cout<<"file open!\n";
     while ( getline (myfile,line) )
     {
 				std::cout << line << '\n';
