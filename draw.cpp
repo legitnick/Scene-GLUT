@@ -131,49 +131,37 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
 }
 void Draw::MoveObj(int x,int y){this->x = x;this->y =y;}
 void Draw::drawObj(){
-		  Point3 lb(-120,190,0);
-		  Point3 rt(-130,230,35);
-		  impasse->Pushp(lb); 
-		  impasse->Pushp(rt);
-		  glTranslatef(-120+x,190+y,0);
-		  double rotation =  (x&&y)?sin(glutGet(GLUT_ELAPSED_TIME)):0;
-		  glRotatef(rotation,0,1,0);
-		  glutSolidCone(10,20,10,10);
-		  glTranslatef(0,0,20);
-		  glRotatef(180,1,0,0);
-		  glutSolidCone(10,20,10,10);
-		  glRotatef(-180,1,0,0);
-		  glTranslatef(-10,0,0);
-		  glutSolidCube(15);
-		  glTranslatef(0,0,15);
-		  glutSolidCube(15);
-		  glTranslatef(0,0,-15);
-		  glTranslatef(10,0,0);
-		  glTranslatef(0,0,-20);
-		  glRotatef(-rotation,0,1,0);
-		  glTranslatef(120-x,-190-y,0);
+drawCubeTexur(35,-120,190,0,tex.texid2);
 }
-void Draw::drawLoseScreen(){}
-void Draw::drawWinScreen(){
-		 begin2D();
-		glEnable(GL_TEXTURE_2D); 
-					 glBindTexture(GL_TEXTURE_2D,tex.texid3);
-glBegin(GL_QUADS);
-    glColor3f(0.0f, 0.0f, 0.0f);
-	 
-                     glTexCoord2f(1,0); 
-    glVertex2f(0, 0);
-                     glTexCoord2f(0,1);
-    glVertex2f(1.0, 0);
-                     glTexCoord2f(1,1);
-    glVertex2f(1.0, 1.0);
-                     glTexCoord2f(0,0); 
-    glVertex2f(0.0,1.0 );
-	glDisable(GL_TEXTURE_2D);
-	
-	 end2D();
+void Draw::drawLoseScreen(){
 
-}
+         glPushMatrix();{
+             glEnable(GL_BLEND);
+             glColor4f(1,1,1,1);
+             glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+             glAlphaFunc(GL_GREATER,.1);
+             glEnable( GL_ALPHA_TEST );
+
+             glPushMatrix();
+		  drawCoordWall(250,100,-150,0,600,tex.texid3);
+glPopMatrix();glPopMatrix();
+			}}
+
+void Draw::drawWinScreen(){
+         glPushMatrix();{
+             glRotatef(0,0,0,0);
+             glTranslatef(0,0,0);
+             glEnable(GL_BLEND);
+             glColor4f(1,1,1,1);
+             glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+             glAlphaFunc(GL_GREATER,.1);
+             glEnable( GL_ALPHA_TEST );
+
+             glPushMatrix();
+		  drawCoordWall(250,100,-150,0,600,tex.texid3);
+glPopMatrix();glPopMatrix();
+			}}
+
 void Draw::drawLVL(bool gg,bool wp){
 		  if(!gg){
 		  drawObj();
@@ -184,10 +172,10 @@ void Draw::drawLVL(bool gg,bool wp){
 		  drawCubeTexur(310,-150,-150,-200,tex.texid12);
 		  drawCubeTexur(310,-150,450,-200,tex.texid12);
 		  drawCoordWall(151,251,30,0,20,tex.texid1);
-		  drawWinScreen();
 		  return;
 		  }
-		  if(wp){drawWinScreen();return;
+		  if(!wp){
+				drawLoseScreen();return;
 		  }
-		  drawLoseScreen();
+		  drawWinScreen();
 }

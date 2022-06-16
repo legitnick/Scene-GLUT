@@ -1,29 +1,74 @@
 #include "main.h"
 bool Game::Sees(Camera_class& cam)const{
 		  for(int i =0;i<200;i++){
-					 std::cout<<"cam.xyz:"<<cam.eye.x<<' '<<cam.eye.y<<' '<<cam.eye.z<<'\n';
 					 Point3 currCamPos = cam.impasse->getObjCube().Has(cam.eye);
 								cam.slide(0,0,-3);
 					 if(!i)
-					 std::cout<<"cam.impasse->getObjCube(drw->objN).xyz:"<<cam.impasse->getObjCube().pts[1].x<<' '<<cam.impasse->getObjCube().pts[1].y<<' '<<cam.impasse->getObjCube().pts[1].z<<'\n';
-					 if(currCamPos.x||currCamPos.y||currCamPos.z){std::cout<<'T'<<'\n';
 								return true;
 					 }
-		  }
+		  
 		  return false;
 }
 void Game::Logic(){
+		  if(!gg){
 		  Camera_class tmp(cam->impasse);
 		  tmp.set(cam->eye,cam->look,cam->up);
 		  if(Sees(tmp)){
-					 std::cout<<"T\n";
+					 //std::cout<<"T\n";
 					 pointed = true;
 		  }
+		  
 		  game.selected = false;
 		  cam->slide(0,0,0);
 }
+}
+void Game::WriteStats(){
+		  std::fstream myfile;
+		  myfile.open("statistics.txt");
+		  std::string line;
+  if (myfile.is_open())
+  {
+			 int i = 0;
+    while ( getline (myfile,line) )
+    {
+				long int num  = stoi(line);
+				if(i==0)num=gameCount;
+				if(i==1)num += ms;
+				i++;
+				std::string newline = std::to_string(num);
+				line.replace(0,line.size(),newline);
+    }
+    myfile.close();
+  }
+
+  else std::cout << "Unable to open file";
+		  myfile<<gameCount<<'\n'<<ms;
+		  myfile.close();
+}
+void Game::ShowStats(){
+		  std::string line;
+		  std::ifstream myfile ("example.txt");
+  if (myfile.is_open())
+  {
+    while ( getline (myfile,line) )
+    {
+				std::cout << line << '\n';
+    }
+    myfile.close();
+  }
+
+  else std::cout << "Unable to open file";
+
+}
+void Game::Quit(){
+		  gameCount++;
+		  WriteStats();
+		  ShowStats();
+			exit(0);
+}
 void Game::keyboardListener(unsigned char key, int x,int y){
-		  if(!(selected&&pointed)){
+		  if(!gg){
+					 if(!(selected&&pointed)){
 		  switch(key){
 			
 		case 'w':	//reverse the rotation of camera
@@ -46,7 +91,7 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 		case '+':
 			break;
 		case 27:	//ESCAPE KEY -- simply exit
-			exit(0);
+		game.quit();
 			break;
 
 		default:
@@ -71,15 +116,18 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 			drw->MoveObj(-5,0);
 			break;
 
-		}
+		}}
 }
 
-void Blink()
+void Game::Blink()
 {
-					 cam->slide(0,0,-160) ;
+					 cam->slide(0,0,-160); this->gg = true;;
+					 std::cout<<cam->eye.x<<'\n';
+					 if(cam->eye.x==INT_MIN)this->wp = false;
 }
 void Game::mouseListener(int button, int state, int x, int y){	//x, y is the x-y of the screen (2D)
-	switch(button){
+if(!gg){
+		  switch(button){
 		case GLUT_LEFT_BUTTON:
 			if(state == GLUT_DOWN){
 				Blink();
@@ -103,6 +151,7 @@ void Game::mouseListener(int button, int state, int x, int y){	//x, y is the x-y
 		default:
 			break;
 	}
+}
 }
 
 void init(){
@@ -178,6 +227,7 @@ void display(){
    glDisable (GL_BLEND);
 }
 void Timer(int ms){
+		  game.ms +=15;
 		  glutPostRedisplay();
 		  glutTimerFunc(15,Timer,0);
 }
@@ -204,7 +254,6 @@ int main(int argc, char **argv){
 	
 	glutPassiveMotionFunc(mouseHandler);
 	glutMotionFunc(mouseHandler);
-	glutFullScreen();
 	glutMainLoop();		//The main loop of OpenGL
 	
 	return 0;

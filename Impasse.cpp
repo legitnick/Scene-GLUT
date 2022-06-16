@@ -34,8 +34,8 @@ Point3 Impasse::Cube::Has(const Point3 pt)const{
 					 if((pts[0].z<pt.z)&&(pts[1].z>pt.z)){deltaPt.z = (pts[1].z+pts[0].z)/2>pt.z?(pt.z-pts[0].z+DELTA):(pt.z-pts[1].z+DELTA);}
 					 if(deltaPt.x&&deltaPt.y&&deltaPt.z){
 								absSmallest(deltaPt);	 
-					 //if(deltaPt.x+deltaPt.y+deltaPt.z>10)return Point3(INT_MAX,0,0);
-		  //std::cout<<'N'<<'\n';
+					 if(deltaPt.x+deltaPt.y+deltaPt.z>10)return Point3(INT_MIN,0,0);
+		  std::cout<<'N'<<'\n';
 					 			return deltaPt;
 					 }
 					 return Point3();

@@ -45,7 +45,7 @@ void Camera_class::setModelviewMatrix(void)
 
 Camera_class::Camera_class(std::shared_ptr<Impasse> impasse):impasse(impasse){
      
-eye = Point3(0,350,200);
+eye = Point3(15,350,200);
 	
 look = Point3 (0,0,100);
 
@@ -64,8 +64,7 @@ void Camera_class::set(Point3 Eye,Point3 look,Vector3 up)
 
 }
 
-void Camera_class::gg(){std::cout<<"show death screen";}
-void Camera_class::slide(long double delU,long double delV,long double delN)
+bool Camera_class::slide(long double delU,long double delV,long double delN)
 {
 		eye.x += delU*u.x+ delV*v.x + delN*n.x;
 		eye.y += delU*u.y+ delV*v.y + delN*n.y;
@@ -76,10 +75,11 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 					eye.x -= deltaPt.x;
 					eye.y -= deltaPt.y;
 					eye.z -= deltaPt.z;
-				  if(deltaPt.x == INT_MAX)gg();
+					return true;
 		}
+		
 				  setModelviewMatrix();
-
+				  return false;
 }
 
 

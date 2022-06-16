@@ -4,14 +4,21 @@
 #include "loader.h"
 #include "camera.h"
 #include "draw.h"
+#include <fstream>
 
 class Game{
-bool pointed = false;
+long int ms = 0;
+short gameCount = 0;
+		  bool pointed = false;
 bool selected = false;
+void Quit();
+void Blink();
+void WriteStats();
+void ShowStats();
 		  public:
 bool Sees(Camera_class & cam)const;
 
-bool gg = false,wp = false;
+bool gg = false,wp = true;
 void Logic();
 void mouseListener(int button, int state, int x, int y);
 void keyboardListener(unsigned char key,int x,int y); 

@@ -7,7 +7,6 @@
 class Camera_class{
    
 	private:
-	   void gg();
 
 			  Vector3 u,v,n;
 	   long double viewAngle,aspect,nearDist,farDist;
@@ -21,9 +20,10 @@ class Camera_class{
 		void cameraMove(int x, int y);
 	   
 		Camera_class(std::shared_ptr<Impasse> impasse);
+		Camera_class();
 	   void set(Point3 eye,Point3 look,Vector3 up);
 
-	   void slide(long double delU,long double delV,long double delN);
+	   bool slide(long double delU,long double delV,long double delN);
 
 	   void roll(float angle);
       
