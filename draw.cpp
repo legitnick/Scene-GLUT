@@ -132,9 +132,9 @@ void Draw::drawCubeTexur(int a,int x, int y, int z,int texID){
 void Draw::MoveObj(int x,int y){this->x = x;this->y =y;}
 void Draw::drawObj(){
 		  Point3 lb(-120,190,0);
-		  Point3 rt(-130,290,35);
-		  if(!objN){objN = impasse->Pushp(lb)/2; 
-		  impasse->Pushp(rt);}
+		  Point3 rt(-130,230,35);
+		  impasse->Pushp(lb); 
+		  impasse->Pushp(rt);
 		  glTranslatef(-120+x,190+y,0);
 		  double rotation =  (x&&y)?sin(glutGet(GLUT_ELAPSED_TIME)):0;
 		  glRotatef(rotation,0,1,0);
@@ -153,7 +153,30 @@ void Draw::drawObj(){
 		  glRotatef(-rotation,0,1,0);
 		  glTranslatef(120-x,-190-y,0);
 }
-void Draw::drawLVL(){
+void Draw::drawLoseScreen(){}
+void Draw::drawWinScreen(){
+		 begin2D();
+		glEnable(GL_TEXTURE_2D); 
+					 glBindTexture(GL_TEXTURE_2D,tex.texid3);
+glBegin(GL_QUADS);
+    glColor3f(0.0f, 0.0f, 0.0f);
+	 
+                     glTexCoord2f(1,0); 
+    glVertex2f(0, 0);
+                     glTexCoord2f(0,1);
+    glVertex2f(1.0, 0);
+                     glTexCoord2f(1,1);
+    glVertex2f(1.0, 1.0);
+                     glTexCoord2f(0,0); 
+    glVertex2f(0.0,1.0 );
+	glDisable(GL_TEXTURE_2D);
+	
+	 end2D();
+
+}
+void Draw::drawLVL(bool gg,bool wp){
+		  if(!gg){
+		  drawObj();
 		  drawCubeTexur(300,-150,150,80,tex.texid2);
 		  drawCubeTexur(300,-150,150,-300,tex.texid2);
 		  drawCubeTexur(310,-460,150,-200,tex.texid12);
@@ -161,5 +184,10 @@ void Draw::drawLVL(){
 		  drawCubeTexur(310,-150,-150,-200,tex.texid12);
 		  drawCubeTexur(310,-150,450,-200,tex.texid12);
 		  drawCoordWall(151,251,30,0,20,tex.texid1);
-		  drawObj();
+		  drawWinScreen();
+		  return;
+		  }
+		  if(wp){drawWinScreen();return;
+		  }
+		  drawLoseScreen();
 }

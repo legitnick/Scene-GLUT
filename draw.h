@@ -23,8 +23,10 @@ void drawWall(int d,int a,int texID);
 					 TexManager tex;
 					 void drawObj();
 		  public:
-int objN = 0;
-void drawLVL();
+int objN ();
+void drawLVL(bool gg, bool wp);
+void drawWinScreen();
+void drawLoseScreen();
 void MoveObj(int x,int y);
 void showText(int x,int y, int z,const char* string);
 void drawCoordWall(int x,int y,int z, int d,int a,int texID);

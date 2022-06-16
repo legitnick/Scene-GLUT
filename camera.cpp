@@ -78,7 +78,6 @@ void Camera_class::slide(long double delU,long double delV,long double delN)
 					eye.z -= deltaPt.z;
 				  if(deltaPt.x == INT_MAX)gg();
 		}
-		eye.z = 40;
 				  setModelviewMatrix();
 
 }

@@ -14,8 +14,8 @@ void absSmallest(Point3& pt){
 //rotate and uplift it a little bit in this case(also condition - mouse 5 pressed)||if x||y rotate, z = ...
 //
 //when pressing keys now just move the object
-Impasse::Cube Impasse::getObjCube(int j){
-					 return Areas[j];
+Impasse::Cube Impasse::getObjCube(){
+					 return Areas[0];
 		  }   
 bool Impasse::Sees(Point3 eye, Point3 camDir,int j){
 		  Vector3 camVDir = Vector3(camDir);

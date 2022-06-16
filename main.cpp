@@ -1,11 +1,11 @@
 #include "main.h"
 bool Game::Sees(Camera_class& cam)const{
-		  for(int i =0;i<100;i++){
+		  for(int i =0;i<200;i++){
 					 std::cout<<"cam.xyz:"<<cam.eye.x<<' '<<cam.eye.y<<' '<<cam.eye.z<<'\n';
-					 Point3 currCamPos = cam.impasse->getObjCube(drw->objN).Has(cam.eye);
-								cam.slide(0,0,2);
+					 Point3 currCamPos = cam.impasse->getObjCube().Has(cam.eye);
+								cam.slide(0,0,-3);
 					 if(!i)
-					 std::cout<<"cam.impasse->getObjCube(drw->objN).xyz:"<<cam.impasse->getObjCube(drw->objN).pts[1].x<<' '<<cam.impasse->getObjCube(drw->objN).pts[1].y<<' '<<cam.impasse->getObjCube(drw->objN).pts[1].z<<'\n';
+					 std::cout<<"cam.impasse->getObjCube(drw->objN).xyz:"<<cam.impasse->getObjCube().pts[1].x<<' '<<cam.impasse->getObjCube().pts[1].y<<' '<<cam.impasse->getObjCube().pts[1].z<<'\n';
 					 if(currCamPos.x||currCamPos.y||currCamPos.z){std::cout<<'T'<<'\n';
 								return true;
 					 }
@@ -74,8 +74,6 @@ void Game::keyboardListener(unsigned char key, int x,int y){
 		}
 }
 
-void specialKeyListener(int key, int x,int y){
-}
 void Blink()
 {
 					 cam->slide(0,0,-160) ;
@@ -171,8 +169,8 @@ void display(){
 
     float lightPosition[4] = {500, 500, 500.0, 1.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
-	drw->drawLVL();
+	
+	drw->drawLVL(game.gg,game.wp);
 	drw->drawMouse();
 
 		  game.Logic();
@@ -199,7 +197,6 @@ int main(int argc, char **argv){
 	glutTimerFunc(0, Timer, 0); 
 	//ADD keyboard listeners:
 	glutKeyboardFunc(keyboardHandler);
-	glutSpecialFunc(specialKeyListener);
 	//glutKeyboardUpFunc(keyUp);
 
 	//ADD mouse listeners:

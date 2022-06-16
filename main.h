@@ -10,6 +10,8 @@ bool pointed = false;
 bool selected = false;
 		  public:
 bool Sees(Camera_class & cam)const;
+
+bool gg = false,wp = false;
 void Logic();
 void mouseListener(int button, int state, int x, int y);
 void keyboardListener(unsigned char key,int x,int y); 
