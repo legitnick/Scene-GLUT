@@ -14,7 +14,7 @@ The build procedure is also simple:
 ```
 **Done!**
 
-![Screen1](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots/room1.png "Picture 1 - Room at the start")
+![Screen1](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots/room.png "Picture 1 - Room at the start")
 ![Screen2](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots/room2.png "Picture 2 - Room after movement")
 ![Screen3](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots "Picture 3 - Scene showed if you've won")
 ![Screen4](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots "Picture 4 - Scene showed if you've lost")
