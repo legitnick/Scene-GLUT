@@ -1,8 +1,10 @@
 ## Teleport game in 3D (OpenGL)
 
-This is an old OpenGL project, which is made with GLUT because I have an 12 year old notebook which does not support modern OpenGL, such as 3.3
- This was only tested on Ubuntu, nothing else
- Install dependencies with these commands:
+This is an old OpenGL project, which is made with GLUT because I have an 12 year old notebook which does not support modern OpenGL, such as 3.3.
+
+This was only tested on Ubuntu, and nothing else.
+ 
+Install dependencies with these commands:
  ```
  sudo apt-get install freeglut3 freeglut3-dev g++ gdb mesa-utils
 
