@@ -1,25 +1,22 @@
-## Lalbagh Fort in 3D (OpenGL)
+## Teleport game in 3D (OpenGL)
 
-This is an old OpenGL project showing a 3D rendered environment of Lalbagh Fort I had done as an undergrad student. Long ago I lost the source codes of this piece of Art ;) (I didn't know about git back then). I've found it again recently as an attachment in one of my old email account and thought why not share it with the world :) (That's why you'll see that all code is comitted under the first commit) Please feel free to move around and fork it as you like.
+This is an old OpenGL project, which is made with GLUT because I have an 12 year old notebook which does not support modern OpenGL, such as 3.3
+ This was only tested on Ubuntu, nothing else
+ Install dependencies with these commands:
+ ```
+ sudo apt-get install freeglut3 freeglut3-dev g++ gdb mesa-utils
 
-#### Here's a Wikipedia link about [Lalbagh Fort](https://en.wikipedia.org/wiki/Lalbagh_Fort)
-
-> Previously this project `windows.h` header file (I was using Windows back then) but now the dependency is removed and the code is made compatible only for Linux (because now all my machines run on Linux). I've tested it with Ubuntu 16.04 LTS version.
-
-To Build this code you need the following dependencies: (This is for Ubuntu or debian based system)
-1. freeglut3 (sudo apt-get install freeglut3)
-2. freeglut3-dev (sudo apt-get install freeglut3-dev)
-3. libglui2c2 (Install it from [here](http://www.rpmseek.com/rpm-pl/libglui2c2.html?hl=com&cs=libgcc1:RE:0:0:0:0:2420))
-4. libglui-dev (Install it from [here](http://www.rpmseek.com/rpm-pl/libglui-dev.html?hl=com&cx=589:L:1000))
-
-Now run the following commands,
+ ```
+The build procedure is also simple:
 ```shell
-> g++ lalbagh.cpp -lGL -lGLU -lglut -g -o lalbagh
-> ./lalbagh
+> g++ *.cpp -lGL -lGLU -lglut -g -o program
+> ./program
 ```
-**And Voila!**
+**Done!**
 
-![alt Rendered image of Lalbagh Fort](https://github.com/AnwarShahriar/Lalbagh-OpenGL/blob/master/screenshots/lalbagh.png "Project Lalbagh")
-
-**Features not working right now:**
-1. Camera movement (Will be fixed when I get some free time)
+![Screen1](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots/room1.png "Picture 1 - Room at the start")
+![Screen2](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots/room2.png "Picture 2 - Room after movement")
+![Screen3](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots "Picture 3 - Scene showed if you've won")
+![Screen4](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots "Picture 4 - Scene showed if you've lost")
+![Screen5](https://github.com/legitnick/Scene-GLUT/tree/another_b/screenshots "Picture 5 - Statistics of the game printed to console and saved on the disk")
+  
